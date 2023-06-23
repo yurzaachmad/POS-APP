@@ -44,48 +44,7 @@
           <!-- Begin Page Content -->
           <h1 class="h3 mb-2 text-gray-800">Users</h1>
           <h5>This is data of Users</h5>
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <a href="#" class="btn btn-primary btn-icon-split">
-                  <span class="icon text-white-50">
-                    <i class="fa-solid fa-plus"></i>
-                  </span>
-                  <span class="text">Add</span>
-              </a>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tfoot>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                            </tr>
-                        </tfoot>
-                        <tbody>
-                            <% data.forEach((item, index) => { %>
-                                <tr>
-                                    <td><%= item.userid %></td>
-                                    <td><%= item.email%></td>
-                                    <td><%= item.name %></td>
-                                    <td><%= item.role %></td>
-                                </tr>
-                                <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+          
           <!-- /.container-fluid -->
         </div>
         <!-- End of Main Content -->
@@ -117,13 +76,10 @@
     <script src="/javascripts/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="/javascripts/jquery.dataTables.min.js"></script>
-    <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        $('#dataTable').DataTable();
-    });
-    </script>
+    <script src="/javascripts/Chart.min.js"></script>
 
+    <!-- Page level custom scripts -->
+    <script src="/javascripts/chart-area-demo.js"></script>
+    <script src="/javascripts/chart-pie-demo.js"></script>
   </body>
 </html>
