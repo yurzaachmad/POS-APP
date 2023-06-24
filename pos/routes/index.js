@@ -1,15 +1,8 @@
 var express = require("express");
 var router = express.Router();
+const isLoggedIn = require("../helpers/util");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-
-const isLoggedIn = function (req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    res.redirect("/login");
-  }
-};
 
 /* GET home page. */
 module.exports = function (db) {
@@ -20,18 +13,6 @@ module.exports = function (db) {
   router.get("/logout", function (req, res, next) {
     req.session.destroy(function (err) {
       res.redirect("/login");
-    });
-  });
-
-  router.get("/user", isLoggedIn, function (req, res, next) {
-    db.query("select * from users", (err, data) => {
-      console.log(data.rows);
-      if (err) {
-        console.log(err);
-      }
-      res.render("user", {
-        data: data.rows,
-      });
     });
   });
 

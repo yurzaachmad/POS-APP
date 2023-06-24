@@ -46,7 +46,7 @@
           <h5>This is data of Users</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="#" class="btn btn-primary btn-icon-split">
+                <a href="/user/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -55,34 +55,27 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tfoot>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                            </tr>
-                        </tfoot>
-                        <tbody>
-                            <% data.forEach((item, index) => { %>
-                                <tr>
-                                    <td><%= item.userid %></td>
-                                    <td><%= item.email%></td>
-                                    <td><%= item.name %></td>
-                                    <td><%= item.role %></td>
-                                </tr>
-                                <% }) %>
-                        </tbody>
-                    </table>
+                    <table class="table table-bordered" id="example" width="100%" cellspacing="0">
+                      <thead>
+                          <tr>
+                              <th>User ID</th>
+                              <th>Email</th>
+                              <th>Name</th>
+                              <th>Role</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr>
+                              <th>User ID</th>
+                              <th>Email</th>
+                              <th>Name</th>
+                              <th>Role</th>
+                              <th>Action</th>
+                          </tr>
+                      </tfoot>
+                      
+                  </table>
                 </div>
             </div>
         </div>
@@ -123,7 +116,45 @@
     $(document).ready(function() {
         $('#dataTable').DataTable();
     });
+    
     </script>
-
+ <script>
+  function editData(){
+    
+  }
+  $(document).ready(function () {
+      $('#example').DataTable({
+          "lengthMenu": [[1, 5, -1], [1, 5, "All"]],
+          "processing": true,
+          "serverSide": true,
+          "ajax": "/datatable",
+          "columns": [
+              { "data": "userid" },
+              { "data": "email" },
+              { "data": "name" },
+              { "data": "role" },
+              {
+                "render": function (data, type, row) {
+                    return `
+                        <td>
+                            <a class="btn btn-success btn-circle" href="/user/edit/${row.userid}">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                            </a>
+                            <a class="btn btn-danger btn-circle" href="/user/delete/${row.userid}">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </a>
+                            <span></span>
+                        </td>
+                    `;
+                }
+            }
+          ]
+      });
+  });
+</script>
   </body>
 </html>
