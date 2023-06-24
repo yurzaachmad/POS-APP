@@ -95,7 +95,25 @@
     <a class="scroll-to-top rounded" href="#page-top">
       <i class="fas fa-angle-up"></i>
     </a>
-
+ <!-- delete Modal-->
+ <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog" role="document">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="exampleModalLabel">Deleted Confirmation</h5>
+             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">×</span>
+             </button>
+         </div>
+         <div class="modal-body">Are you sure, you want delete it?</div>
+         <div class="modal-footer">
+             <a class="btn btn-secondary" data-dismiss="modal">No</a>
+             <a class="btn btn-primary" id="confirmDeleteBtn" href="/user">Yes</a>
+         </div>
+     </div>
+ </div>
+</div>
     <!-- Logout Modal-->
     <%- include('partials/logoutModal.ejs')%>
 
@@ -118,6 +136,35 @@
     });
     
     </script>
+    <script>
+    $(document).ready(function() {
+  var deleteId;
+
+  $(document).on('click', '.btn-danger', function(event) {
+    event.preventDefault();
+    deleteId = $(this).data('id');
+    $('#deleteModal').modal('show');
+  });
+
+  $('#confirmDeleteBtn').on('click', function(event) {
+    event.preventDefault();
+    if (deleteId) {
+      $.ajax({
+        url: '/user/delete/' + deleteId,
+        type: 'GET',
+        success: function() {
+          console.log('Data berhasil dihapus');
+          $('#deleteModal').modal('hide');
+          location.reload(); // Memuat ulang halaman setelah penghapusan berhasil
+        },
+        error: function() {
+          console.log('Terjadi kesalahan saat menghapus data');
+        }
+      });
+    }
+  });
+});
+  </script>
  <script>
   function editData(){
     
@@ -142,7 +189,7 @@
                                     <i class="fas fa-info-circle"></i>
                                 </span>
                             </a>
-                            <a class="btn btn-danger btn-circle" href="/user/delete/${row.userid}">
+                            <a class="btn btn-danger btn-circle" href="#" data-toggle="modal" data-id="${row.userid}" data-target="#deleteModal">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-trash"></i>
                                 </span>
