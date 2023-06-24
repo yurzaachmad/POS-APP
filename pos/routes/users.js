@@ -29,7 +29,6 @@ module.exports = function (db) {
         params.length > 0 ? ` where ${params.join(" or ")}` : ""
       } order by ${sortBy} ${sortMode} limit ${limit} offset ${offset} `
     );
-    console.log(data);
     const response = {
       draw: Number(req.query.draw),
       recordsTotal: total.rows[0].total,
@@ -38,20 +37,20 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/user", function (req, res, next) {
+  router.get("/users", function (req, res, next) {
     db.query("select * from users", (err, data) => {
-      console.log(data.rows);
+      // console.log(data.rows);
       if (err) {
         console.log(err);
       }
-      res.render("user", {
+      res.render("users/user", {
         data: data.rows,
       });
     });
   });
 
   router.get("/user/add", (req, res) => {
-    res.render("addform", { data: {}, isEdit: false });
+    res.render("users/addform", { data: {}, isEdit: false });
   });
 
   router.post("/user/add", (req, res) => {
@@ -60,11 +59,10 @@ module.exports = function (db) {
         "INSERT INTO users(email, name, password, role) VALUES ($1, $2, $3, $4)",
         [req.body.email, req.body.name, hash, req.body.role],
         (err, data) => {
-          console.log("ini", data);
           if (err) {
             console.log(err);
           }
-          res.redirect("/user");
+          res.redirect("/users");
         }
       );
     });
@@ -77,7 +75,7 @@ module.exports = function (db) {
         console.log(err);
       }
       console.log(item.rows);
-      res.render("addform", { data: item.rows[0], isEdit: true });
+      res.render("users/addform", { data: item.rows[0], isEdit: true });
     });
   });
 
@@ -90,7 +88,7 @@ module.exports = function (db) {
         if (err) {
           console.error(err);
         } else {
-          res.redirect("/user");
+          res.redirect("/users");
         }
       }
     );
@@ -100,9 +98,9 @@ module.exports = function (db) {
     const id = req.params.id;
     db.query("delete from users where userid = $1", [id], (err) => {
       if (err) {
-        console.log("hapus data Kontrak gagal");
+        console.log("hapus data users gagal");
       }
-      res.redirect("/user");
+      res.redirect("/users");
     });
   });
 

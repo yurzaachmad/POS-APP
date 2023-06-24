@@ -83,5 +83,9 @@ module.exports = function (db) {
   router.get("/dashboard", isLoggedIn, function (req, res, next) {
     res.render("dashboard");
   });
+
+  router.get("/", isLoggedIn, function (req, res, next) {
+    res.redirect("/dashboard");
+  });
   return router;
 };

@@ -31,7 +31,7 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
       <!-- Sidebar -->
-     <%- include('partials/sidebar.ejs') %>
+     <%- include('../partials/sidebar.ejs') %>
       <!-- End of Sidebar -->
 
       <!-- Content Wrapper -->
@@ -39,14 +39,18 @@
         <!-- Main Content -->
         <div id="content">
           <!-- Topbar -->
-         <%- include('partials/topbar.ejs') %>
+         <%- include('../partials/topbar.ejs') %>
           <!-- End of Topbar -->
         <div class="container-fluid">
           <!-- Begin Page Content -->
           <h1 class="h3 mb-2 text-gray-800">Users</h1>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                  <span class="m-0 font-weight-bold text-primary">Form Add</span>
+              <%if(isEdit){%>
+                <span class="m-0 font-weight-bold text-primary">Form Edit</span>
+                <%} if(!isEdit){%>
+                <span class="m-0 font-weight-bold text-primary">Form Add</span>
+                <%}%>
               </a>
             </div>
           <div class="card-body">
@@ -95,7 +99,7 @@
                     </span>
                     <span class="text">Save</span>
                 </button>
-                <a href="/user" class="btn btn-warning btn-icon-split">
+                <a href="/users" class="btn btn-warning btn-icon-split">
                     <span class="icon text-white-50">
                         <i class="fa-solid fa-rotate-left"></i>
                     </span>
@@ -112,7 +116,7 @@
         <!-- End of Main Content -->
 
         <!-- Footer -->
-        <%- include('partials/footer.ejs') %>
+        <%- include('../partials/footer.ejs') %>
         <!-- End of Footer -->
       </div>
       <!-- End of Content Wrapper -->
@@ -125,7 +129,7 @@
     </a>
 
     <!-- Logout Modal-->
-    <%- include('partials/logoutModal.ejs')%>
+    <%- include('../partials/logoutModal.ejs')%>
 
     <!-- Bootstrap core JavaScript-->
     <script src="/javascripts/jquery.min.js"></script>
