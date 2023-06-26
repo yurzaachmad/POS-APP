@@ -24,6 +24,9 @@
 
     <!-- Custom styles for this template-->
     <link rel="stylesheet" href="/stylesheets/sb-admin-2.min.css" />
+
+     <!-- Custom styles for this page -->
+     <link rel="stylesheet" href="/stylesheets/dataTables.bootstrap4.min.css" />
   </head>
 
   <body id="page-top">
@@ -130,12 +133,8 @@
     <!-- Page level plugins -->
     <script src="/javascripts/jquery.dataTables.min.js"></script>
     <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        $('#dataTable').DataTable();
-    });
-    
-    </script>
+    <!-- Page level custom scripts -->
+    <!-- <script src="/javascripts/datatables-demo.js"></script> -->
     <script>
     $(document).ready(function() {
   var deleteId;
@@ -166,9 +165,6 @@
 });
   </script>
  <script>
-  function editData(){
-    
-  }
   $(document).ready(function () {
       $('#example').DataTable({
           "lengthMenu": [[3, 10, 100], [3, 10, "All"]],

@@ -6,6 +6,7 @@ var logger = require("morgan");
 const { Pool } = require("pg");
 var session = require("express-session");
 var flash = require("connect-flash");
+const fileUpload = require("express-fileupload");
 
 const pool = new Pool({
   user: "yurza",
@@ -18,6 +19,7 @@ const pool = new Pool({
 var indexRouter = require("./routes/index")(pool);
 var usersRouter = require("./routes/users")(pool);
 var unitsRouter = require("./routes/units")(pool);
+var goodsRouter = require("./routes/goods")(pool);
 
 var app = express();
 
@@ -39,10 +41,13 @@ app.use(
   })
 );
 app.use(flash());
+//default options
+app.use(fileUpload());
 
 app.use("/", indexRouter);
 app.use("/", usersRouter);
 app.use("/", unitsRouter);
+app.use("/", goodsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

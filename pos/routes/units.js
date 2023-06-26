@@ -7,6 +7,8 @@ module.exports = function (db) {
 
     if (req.query.search.value) {
       params.push(`unit ilike '%${req.query.search.value}%'`);
+      params.push(`name ilike '%${req.query.search.value}%'`);
+      params.push(`note ilike '%${req.query.search.value}%'`);
     }
 
     const limit = req.query.length;

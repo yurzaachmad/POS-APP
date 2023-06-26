@@ -21,6 +21,7 @@
       href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/stylesheets/dataTables.bootstrap4.min.css" />
 
     <!-- Custom styles for this template-->
     <link rel="stylesheet" href="/stylesheets/sb-admin-2.min.css" />
@@ -30,7 +31,7 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
       <!-- Sidebar -->
-     <%- include('partials/sidebar.ejs') %>
+     <%- include('../partials/sidebar.ejs') %>
       <!-- End of Sidebar -->
 
       <!-- Content Wrapper -->
@@ -38,7 +39,7 @@
         <!-- Main Content -->
         <div id="content">
           <!-- Topbar -->
-         <%- include('partials/topbar.ejs') %>
+         <%- include('../partials/topbar.ejs') %>
           <!-- End of Topbar -->
         <div class="container-fluid">
           <!-- Begin Page Content -->
@@ -50,7 +51,7 @@
         <!-- End of Main Content -->
 
         <!-- Footer -->
-        <%- include('partials/footer.ejs') %>
+        <%- include('../partials/footer.ejs') %>
         <!-- End of Footer -->
       </div>
       <!-- End of Content Wrapper -->
@@ -63,9 +64,8 @@
     </a>
 
     <!-- Logout Modal-->
-    <%- include('partials/logoutModal.ejs')%>
+    <%- include('../partials/logoutModal.ejs')%>
 
-    <!-- Bootstrap core JavaScript-->
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
@@ -76,10 +76,7 @@
     <script src="/javascripts/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="/javascripts/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="/javascripts/chart-area-demo.js"></script>
-    <script src="/javascripts/chart-pie-demo.js"></script>
+    <script src="/javascripts/jquery.dataTables.min.js"></script>
+    <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
   </body>
 </html>
