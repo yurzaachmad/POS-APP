@@ -1,16 +1,17 @@
 var express = require("express");
 var router = express.Router();
-const fileUpload = require("express-fileupload");
 var path = require("path");
 
 module.exports = function (db) {
   router.get("/datagoods", async (req, res) => {
     let params = [];
-
     if (req.query.search.value) {
-      params.push(`barcode ilike '%${req.query.search.value}%'`);
-      //   params.push(`name ilike '%${req.query.search.value}%'`);
-      //   params.push(`note ilike '%${req.query.search.value}%'`);
+      const searchValue = req.query.search.value;
+      params.push(`barcode ILIKE '%${searchValue}%'`);
+      params.push(`name ILIKE '%${searchValue}%'`);
+      params.push(`unit ILIKE '%${searchValue}%'`);
+      // casting, changing the stock from integer into string
+      params.push(`stock::text ILIKE '%${searchValue}%'`);
     }
 
     const limit = req.query.length;
@@ -43,7 +44,7 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      console.log("ini", data.rows);
+      // console.log("ini", data.rows);
       res.render("goods/good", {
         data: data.rows,
       });
@@ -113,8 +114,8 @@ module.exports = function (db) {
         if (err) {
           console.log(err);
         }
-        console.log(items.rows);
-        console.log(items.rows[0].unit);
+        // console.log(items.rows);
+        // console.log(items.rows[0].unit);
         res.render("goods/goodform", {
           data: items.rows[0],
           item: data.rows,
