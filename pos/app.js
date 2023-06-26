@@ -20,6 +20,7 @@ var indexRouter = require("./routes/index")(pool);
 var usersRouter = require("./routes/users")(pool);
 var unitsRouter = require("./routes/units")(pool);
 var goodsRouter = require("./routes/goods")(pool);
+var suppliersRouter = require("./routes/suppliers")(pool);
 
 var app = express();
 
@@ -48,6 +49,7 @@ app.use("/", indexRouter);
 app.use("/", usersRouter);
 app.use("/", unitsRouter);
 app.use("/", goodsRouter);
+app.use("/", suppliersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
