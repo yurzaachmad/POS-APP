@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <script
+      src="https://kit.fontawesome.com/6ea2cb925f.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>POS - Purchases</title>
+
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" href="/stylesheets/all.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/stylesheets/dataTables.bootstrap4.min.css" />
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" href="/stylesheets/sb-admin-2.min.css" />
+  </head>
+
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+     <%- include('../partials/sidebar.ejs') %>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+         <%- include('../partials/topbar.ejs') %>
+          <!-- End of Topbar -->
+        <div class="container-fluid">
+          <!-- Begin Page Content -->
+          <h1 class="h3 mb-2 text-gray-800">Purchases</h1>
+          <h5>This is page of Purchases</h5>
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <a href="/purchase/add" class="btn btn-primary btn-icon-split">
+                  <span class="icon text-white-50">
+                    <i class="fa-solid fa-plus"></i>
+                  </span>
+                  <span class="text">Add</span>
+              </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="suppliers" width="100%" cellspacing="0">
+                      <thead>
+                          <tr>
+                              <th>Purchase ID</th>
+                              <th>Name</th>
+                              <th>Adress</th>
+                              <th>Phone</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr>
+                            <th>Purchase ID</th>
+                            <th>Name</th>
+                            <th>Adress</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                          </tr>
+                      </tfoot>
+                  </table>
+                </div>
+            </div>
+        </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <%- include('../partials/footer.ejs') %>
+        <!-- End of Footer -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <%- include('../partials/logoutModal.ejs')%>
+
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/javascripts/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/javascripts/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="/javascripts/jquery.dataTables.min.js"></script>
+    <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
+  </body>
+</html>

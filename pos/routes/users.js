@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const isLoggedIn = require("../helpers/util");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -37,9 +38,9 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/users", function (req, res, next) {
+  router.get("/users", isLoggedIn, function (req, res, next) {
     db.query("select * from users", (err, data) => {
-      // console.log(data.rows);
+      // console.log("ini", data.rows);
       if (err) {
         console.log(err);
       }
@@ -49,7 +50,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/user/add", (req, res) => {
+  router.get("/user/add", isLoggedIn, (req, res) => {
     res.render("users/addform", { data: {}, isEdit: false });
   });
 
@@ -68,7 +69,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/user/edit/:id", (req, res) => {
+  router.get("/user/edit/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     db.query("select * from users where userid = $1", [id], (err, item) => {
       if (err) {
@@ -79,7 +80,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/user/edit/:id", (req, res) => {
+  router.post("/user/edit/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE users SET email = $1, name = $2, role = $3 where userid = $4",
@@ -94,7 +95,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/user/delete/:id", (req, res) => {
+  router.get("/user/delete/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     db.query("delete from users where userid = $1", [id], (err) => {
       if (err) {
