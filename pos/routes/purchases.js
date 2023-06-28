@@ -11,7 +11,7 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      console.log("ini", data.rows);
+      // console.log("ini", data.rows);
       res.render("purchases/purchase", {
         data: data.rows,
       });
@@ -29,7 +29,7 @@ module.exports = function (db) {
           console.log(err);
         }
 
-        console.log("Data baru yang dimasukkan:", data.rows[0]);
+        // console.log("Data baru yang dimasukkan:", data.rows[0]);
 
         res.redirect(`/purchase/${data.rows[0].invoice}`);
       }
@@ -39,7 +39,7 @@ module.exports = function (db) {
   router.get("/purchase/:invoice", (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
-    console.log("skrng", invoice);
+
     db.query(
       "select * from purchases where invoice = $1",
       [invoice],
@@ -48,13 +48,57 @@ module.exports = function (db) {
           "select * from users where userid = $1",
           [userid],
           (err, items) => {
-            res.render("purchases/purchaseform", {
-              data: item.rows[0],
-              dataa: items.rows[0],
-              moment,
+            db.query("select * from goods", (err, datagoods) => {
+              res.render("purchases/purchaseform", {
+                data: item.rows[0],
+                dataa: items.rows[0],
+                moment,
+                datagood: datagoods.rows,
+              });
             });
           }
         );
+      }
+    );
+  });
+
+  router.get("/purchase/get/:barcode", (req, res) => {
+    const { barcode } = req.params;
+    db.query(
+      "select * from goods where barcode = $1",
+      [barcode],
+      (err, item) => {
+        // console.log(item);
+        if (err) {
+          console.log(err);
+        }
+        res.json(item.rows);
+      }
+    );
+  });
+
+  router.post("/purchase/add/items", (req, res) => {
+    const purchasePrice = parseFloat(
+      req.body.purchasepricegoods.replace(/[^0-9.-]+/g, "")
+    );
+    const totalprice = parseFloat(
+      req.body.totalprice.replace(/[^0-9.-]+/g, "")
+    );
+    db.query(
+      "insert into purchaseitems (invoice, itemcode, quantity, purchaseprice, totalprice) values ($1, $2, $3, $4, $5) returning *",
+      [
+        req.body.invoice,
+        req.body.barcode,
+        req.body.qtygoods,
+        purchasePrice,
+        totalprice,
+      ],
+      (err, item) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(item, "ini");
+        res.redirect("/purchases");
       }
     );
   });
