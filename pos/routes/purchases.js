@@ -49,11 +49,14 @@ module.exports = function (db) {
           [userid],
           (err, items) => {
             db.query("select * from goods", (err, datagoods) => {
-              res.render("purchases/purchaseform", {
-                data: item.rows[0],
-                dataa: items.rows[0],
-                moment,
-                datagood: datagoods.rows,
+              db.query("select * from suppliers", (err, supply) => {
+                res.render("purchases/purchaseform", {
+                  data: item.rows[0],
+                  dataa: items.rows[0],
+                  moment,
+                  datagood: datagoods.rows,
+                  suppliers: supply.rows,
+                });
               });
             });
           }
@@ -98,7 +101,7 @@ module.exports = function (db) {
           console.log(err);
         }
         console.log(item, "ini");
-        res.redirect("/purchases");
+        res.redirect("/purchases/add");
       }
     );
   });

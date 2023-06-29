@@ -117,13 +117,60 @@
                     </div>
                   </div>
                   <div class="card-header py-3">
-                    <button type="submit" class="btn btn-primary btn-icon-split">
+                    <button type="button" id="add" class="btn btn-primary btn-icon-split">
                       <span class="icon text-white-50">
                         <i class="fa-solid fa-plus"></i>
                       </span>
                       <span class="text">Add</span>
                     </button>
                 </div>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                    <th>No.</th>
+                    <th>Barcode</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total Price</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  </tbody>
+                </table>
+                <div class="row mb-3">
+                  <label for="totalsum" class="col-sm-2 col-form-label">Total Summary</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="totalsum" >
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">Supplier</label>
+                  <div class="col-sm-10">
+                    <select name="barcode" class="form-select" aria-label="Default select example" id="selectBarcode">
+                      <option selected>Open this select menu</option>
+                      <% suppliers.forEach(name => { %>
+                        <option value="<%=name.name.toString()%>"><%=name.name.toString()%></option>
+                        <% }) %>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-header py-3">
+                <button type="submit" id="submit" class="btn btn-success btn-icon-split">
+                  <span class="icon text-white-50">
+                      <i class="fa-solid fa-plus"></i>
+                  </span>
+                  <span class="text">Save</span>
+              </button>
+              <a href="/purchases" class="btn btn-warning btn-icon-split">
+                  <span class="icon text-white-50">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </span>
+                  <span class="text">Back</span>
+              </a>
+            </div>
+              <br><br>
               </form>
         </div>
         </div>
@@ -208,7 +255,66 @@
             inputtotal.val('Rp ' + numeral(totalprice.toFixed(2)).format('0,0.00'))
           }
         }
+        var formData = []; // Array untuk menyimpan data sementara
+        var index = 1; // Variable untuk menyimpan nomor urut
+    
+        $('#add').on('click', function(event) {
+          event.preventDefault();
+    
+          const selectBarcode = $('#selectBarcode').val();
+          const inputGoodsName = $('#namegoods').val();
+          const inputStock = $('#stockgoods').val();
+          const inputPurchasePrice = $('#purchasepricegoods').val();
+          const inputqty = $('#qtygoods').val();
+          const inputtotal = $('#totalprice').val();
+          
+          
+          // Menambahkan data ke dalam array
+          var newData = { selectBarcode: selectBarcode, inputGoodsName: inputGoodsName, inputqty: inputqty, inputPurchasePrice: inputPurchasePrice, inputtotal: inputtotal };
+          formData.push(newData);
+    
+          // Menambahkan data ke dalam tabel di bawah form
+          var row = '<tr><td>' + index + '</td><td>' + selectBarcode + '</td><td>' + inputGoodsName + '</td><td>' + inputqty + '</td><td>' + inputPurchasePrice + '</td><td>' + inputtotal + '</td></tr>';
+          $('table tbody').append(row);
+    
+          // Menambahkan 1 untuk nomor urut berikutnya
+          index++;
+          calculateTotalAllPrice()
+        });
+        $('#submit').on('submit', function() {
+          // Mengirimkan semua data ke server
+          $.ajax({
+            url: '/submit',
+            type: 'POST',
+            data: { formData: formData },
+            success: function(response) {
+              console.log(response);
+              // Menghapus semua data dari array dan tabel setelah berhasil disimpan di database
+              formData = [];
+              $('table tbody').empty();
+              index = 1; // Mereset nomor urut ke 1
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        });
+   
+        function calculateTotalAllPrice() {
+          const total = $('#totalsum')
+          var totalHarga = 0;
+           $('table tbody tr').each(function() {
+            var harga = parseFloat($(this).find('td:eq(5)').text().replace('Rp', '').replace(',', ''));
+
+                if (!isNaN(harga)) {
+                    totalHarga += harga;
+                }
+        });
+        var hargaFormatted = totalHarga.toFixed(2);
+         total.val('Rp.' +numeral(hargaFormatted).format('0,0.00'));
+        }
       });
     </script>
+    
   </body>
 </html>
