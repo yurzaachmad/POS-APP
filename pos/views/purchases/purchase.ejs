@@ -56,22 +56,22 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="suppliers" width="100%" cellspacing="0">
+                    <table class="table table-bordered" id="purchases" width="100%" cellspacing="0">
                       <thead>
                           <tr>
-                              <th>Purchase ID</th>
-                              <th>Name</th>
-                              <th>Adress</th>
-                              <th>Phone</th>
+                              <th>Invoice</th>
+                              <th>Time</th>
+                              <th>Total Summary</th>
+                              <th>Supplier</th>
                               <th>Action</th>
                           </tr>
                       </thead>
                       <tfoot>
                           <tr>
-                            <th>Purchase ID</th>
-                            <th>Name</th>
-                            <th>Adress</th>
-                            <th>Phone</th>
+                            <th>Invoice</th>
+                            <th>Time</th>
+                            <th>Total Summary</th>
+                            <th>Supplier</th>
                             <th>Action</th>
                           </tr>
                       </tfoot>
@@ -96,6 +96,25 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
+       <!-- delete Modal-->
+ <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog" role="document">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="exampleModalLabel">Deleted Confirmation</h5>
+             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">×</span>
+             </button>
+         </div>
+         <div class="modal-body">Are you sure, you want delete it?</div>
+         <div class="modal-footer">
+             <a class="btn btn-secondary" data-dismiss="modal">No</a>
+             <a class="btn btn-primary" id="confirmDeleteBtn" href="/units">Yes</a>
+         </div>
+     </div>
+ </div>
+</div>
     <!-- Logout Modal-->
     <%- include('../partials/logoutModal.ejs')%>
 
@@ -111,5 +130,77 @@
     <!-- Page level plugins -->
     <script src="/javascripts/jquery.dataTables.min.js"></script>
     <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script>
+      $(document).ready(function () {
+          $('#purchases').DataTable({
+              "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
+              "processing": true,
+              "serverSide": true,
+              "ajax": "/datapurchase",
+              "columns": [
+                  { "data": "invoice" },
+                  { "data": "time" },
+                  {
+                    "data": "totalsum",
+                    "render": function (data, type, row) {
+                      // Mengonversi nilai totalsum menjadi format rupiah
+                      var formattedTotal = numeral(data).format('0,0.00');
+                      return 'Rp ' + formattedTotal;
+                    }
+                  },
+                  { "data": "supplier" },
+                  {
+                    "render": function (data, type, row) {
+                        return `
+                            <td>
+                                <a class="btn btn-success btn-circle" href="/purchase/edit/${row.invoice}">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </a>
+                                <a class="btn btn-danger btn-circle" href="#" data-toggle="modal" data-id="${row.invoice}" data-target="#deleteModal">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                </a>
+                                <span></span>
+                            </td>
+                        `;
+                    }
+                }
+              ]
+          });
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+    var deleteId;
+  
+    $(document).on('click', '.btn-danger', function(event) {
+      event.preventDefault();
+      deleteId = $(this).data('id');
+      $('#deleteModal').modal('show');
+    });
+  
+    $('#confirmDeleteBtn').on('click', function(event) {
+      event.preventDefault();
+      if (deleteId) {
+        $.ajax({
+          url: '/purchase/delete/' + deleteId,
+          type: 'GET',
+          success: function() {
+            console.log('Data berhasil dihapus');
+            $('#deleteModal').modal('hide');
+            location.reload(); // Memuat ulang halaman setelah penghapusan berhasil
+          },
+          error: function() {
+            console.log('Terjadi kesalahan saat menghapus data');
+          }
+        });
+      }
+    });
+  });
+    </script>
   </body>
 </html>
