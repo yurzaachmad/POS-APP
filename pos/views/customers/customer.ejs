@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <script
+      src="https://kit.fontawesome.com/6ea2cb925f.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>POS - Customers</title>
+
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" href="/stylesheets/all.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/stylesheets/dataTables.bootstrap4.min.css" />
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" href="/stylesheets/sb-admin-2.min.css" />
+  </head>
+
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+     <%- include('../partials/sidebar.ejs') %>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+         <%- include('../partials/topbar.ejs') %>
+          <!-- End of Topbar -->
+        <div class="container-fluid">
+          <!-- Begin Page Content -->
+          <h1 class="h3 mb-2 text-gray-800">Customers</h1>
+          <h5>This is page of Customers</h5>
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <a href="/customers/add" class="btn btn-primary btn-icon-split">
+                  <span class="icon text-white-50">
+                    <i class="fa-solid fa-plus"></i>
+                  </span>
+                  <span class="text">Add</span>
+              </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="customersid" width="100%" cellspacing="0">
+                      <thead>
+                          <tr>
+                              <th>Name</th>
+                              <th>Address</th>
+                              <th>Phone</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr>
+                            <th>Address</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                          </tr>
+                      </tfoot>
+
+                  </table>
+                </div>
+            </div>
+        </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <%- include('../partials/footer.ejs') %>
+        <!-- End of Footer -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+      <!-- delete Modal-->
+ <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog" role="document">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="exampleModalLabel">Deleted Confirmation</h5>
+             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">×</span>
+             </button>
+         </div>
+         <div class="modal-body">Are you sure, you want delete it?</div>
+         <div class="modal-footer">
+             <a class="btn btn-secondary" data-dismiss="modal">No</a>
+             <a class="btn btn-primary" id="confirmDeleteBtn" href="/customers">Yes</a>
+         </div>
+     </div>
+ </div>
+</div>
+
+
+    <!-- Logout Modal-->
+    <%- include('../partials/logoutModal.ejs')%>
+
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/javascripts/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/javascripts/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="/javascripts/jquery.dataTables.min.js"></script>
+    <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+          $('#customersid').DataTable({
+            "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
+            "processing": true,
+            "serverSide": true,
+            "ajax": "/customertable",
+            "columns": [
+              { "data": "name" },
+              { "data": "address" },
+              { "data": "phone" },
+              {
+                "render": function (data, type, row) {
+                  return `
+                    <td>
+                      <a class="btn btn-success btn-circle" href="customer/edit/${row.customerid}">
+                        <span class="icon text-white-50">
+                          <i class="fas fa-info-circle"></i>
+                        </span>
+                      </a>
+                      <a class="btn btn-danger btn-circle" href="#" data-toggle="modal" data-id="${row.customerid}" data-target="#deleteModal">
+                        <span class="icon text-white-50">
+                          <i class="fas fa-trash"></i>
+                        </span>
+                      </a>
+                      <span></span>
+                    </td>
+                  `;
+                }
+              }
+            ]
+          });
+var deleteId;
+
+$(document).on('click', '.btn-danger', function(event) {
+  event.preventDefault();
+  deleteId = $(this).data('id');
+  $('#deleteModal').modal('show');
+});
+
+$('#confirmDeleteBtn').on('click', function(event) {
+  event.preventDefault();
+  if (deleteId) {
+    $.ajax({
+      url: '/customer/delete/' + deleteId,
+      type: 'GET',
+      success: function() {
+        console.log('Data berhasil dihapus');
+        $('#deleteModal').modal('hide');
+        location.reload(); // Memuat ulang halaman setelah penghapusan berhasil
+      },
+      error: function() {
+        console.log('Terjadi kesalahan saat menghapus data');
+      }
+    });
+  }
+});
+});
+        
+      </script>
+  </body>
+</html>
