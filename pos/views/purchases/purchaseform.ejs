@@ -26,6 +26,12 @@
 
     <!-- Custom styles for this template-->
     <link rel="stylesheet" href="/stylesheets/sb-admin-2.min.css" />
+  <style>
+    thead {
+  display: table-header-group;
+}
+
+  </style>
   </head>
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -122,6 +128,7 @@
                 <table class="table table-striped" id="purchaseitems">
                   <thead>
                     <tr>
+                      <th>No.</th>
                     <th>Barcode</th>
                     <th>Name</th>
                     <th>Qty</th>
@@ -129,7 +136,7 @@
                     <th>Total Price</th>
                   </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="purchaseitem">
                     
                   </tbody>
                 </table>
@@ -170,7 +177,6 @@
           </div>
             </form>
         </div>
-          
           <!-- /.container-fluid -->
         </div>
         <!-- End of Main Content -->
@@ -206,7 +212,7 @@
     <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     <script>
-      let invoice = '<%= data.invoice %>';
+  let invoice = '<%= data.invoice %>';
       $(document).ready(function() {
         const selectBarcode = $('#selectBarcode');
         const inputGoodsName = $('#namegoods');
@@ -214,126 +220,79 @@
         const inputPurchasePrice = $('#purchasepricegoods');
         const inputqty = $('#qtygoods');
         const inputtotal = $('#totalprice');
-    
-        // Fungsi untuk membaca tabel
-        const readTable = () => {
-  $.get(`/purchase/get/edit/item/${invoice}`).done((data) => {
-    let html = '';
-    data.forEach((item, index) => {
-      html += `
-        <tr class="table-row">
-          <td>${index + 1}</td>
-          <td>${item.itemcode}</td>
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>${item.purchaseprice}</td>
-          <td>${item.totalprice}</td>
-          <td>
-            <a href="#" class="btn btn-circle btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal${item.id}">
-              <i class="fas fa-solid fa-trash"></i>
-            </a>
-            <div class="modal fade" id="deleteModal${item.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Deleted Confirmation</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">×</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">Are you sure you want to delete it?</div>
-                  <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
-                    <a class="btn btn-primary" href="/purchases/deleteitems/${item.id}">Yes</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      `;
-    });
-    $('#purchaseitems').html(html);
-    calculateTotalAllPrice();
-  });
-};
+   
+        const addToTable = () => {
+          const selectBarcode = $('#selectBarcode').val();
+          const inputGoodsName = $('#namegoods').val();
+          const inputStock = $('#stockgoods').val();
+          const inputPurchasePrice = $('#purchasepricegoods').val();
+          const inputqty = $('#qtygoods').val();
+          const inputtotal = $('#totalprice').val();
 
-const addToTable = () => {
-  const selectBarcode = $('#selectBarcode').val();
-  const inputGoodsName = $('#namegoods').val();
-  const inputStock = $('#stockgoods').val();
-  const inputPurchasePrice = $('#purchasepricegoods').val();
-  const inputqty = $('#qtygoods').val();
-  const inputtotal = $('#totalprice').val();
+            var row = `
+              <tr class="table-row">
+                <td></td>
+                <td>${selectBarcode}</td>
+                <td>${inputGoodsName}</td>
+                <td>${inputqty}</td>
+                <td>${inputPurchasePrice}</td>
+                <td>${inputtotal}</td>
+              </tr>
+            `;
 
-  var row = `
-    <tr class="table-row">
-      <td></td>
-      <td>${selectBarcode}</td>
-      <td>${inputGoodsName}</td>
-      <td>${inputqty}</td>
-      <td>${inputPurchasePrice}</td>
-      <td>${inputtotal}</td>
-    </tr>
-  `;
+            $('#purchaseitem').append(row);
 
-  $('#purchaseitems').append(row);
+            // Update index values in the table
+            $('.table-row').each(function(index) {
+              $(this).find('td:first').text(index + 1);
+            });
 
-  // Update index values in the table
-  $('.table-row').each(function(index) {
-    $(this).find('td:first').text(index + 1);
-  });
+            calculateTotalAllPrice();
+        };
 
-  calculateTotalAllPrice();
-};
+            var formData = [];
+            var index = 1;
 
-var formData = [];
-var index = 1;
+            $('#add').on('click', function(event) {
+              event.preventDefault();
 
-$('#add').on('click', function(event) {
-  event.preventDefault();
+              $.ajax({
+                url: '/purchase/add/items',
+                method: 'POST',
+                data: {
+                  invoice: $('#invoice').val(),
+                  barcode: $('#selectBarcode').val(),
+                  qtygoods: $('#qtygoods').val(),
+                  purchasepricegoods: $('#purchasepricegoods').val(),
+                  totalprice: $('#totalprice').val()
+                },
+                success: function(response) {
+                  addToTable();
 
-  $.ajax({
-    url: '/purchase/add/items',
-    method: 'POST',
-    data: {
-      invoice: $('#invoice').val(),
-      barcode: $('#selectBarcode').val(),
-      qtygoods: $('#qtygoods').val(),
-      purchasepricegoods: $('#purchasepricegoods').val(),
-      totalprice: $('#totalprice').val()
-    },
-    success: function(response) {
-      addToTable();
+                  const selectBarcode = $('#selectBarcode').val();
+                  const inputGoodsName = $('#namegoods').val();
+                  const inputStock = $('#stockgoods').val();
+                  const inputPurchasePrice = $('#purchasepricegoods').val();
+                  const inputqty = $('#qtygoods').val();
+                  const inputtotal = $('#totalprice').val();
 
-      const selectBarcode = $('#selectBarcode').val();
-      const inputGoodsName = $('#namegoods').val();
-      const inputStock = $('#stockgoods').val();
-      const inputPurchasePrice = $('#purchasepricegoods').val();
-      const inputqty = $('#qtygoods').val();
-      const inputtotal = $('#totalprice').val();
+                  var newData = {
+                    selectBarcode: selectBarcode,
+                    inputGoodsName: inputGoodsName,
+                    inputqty: inputqty,
+                    inputPurchasePrice: inputPurchasePrice,
+                    inputtotal: inputtotal
+                  };
+                  formData.push(newData);
 
-      var newData = {
-        selectBarcode: selectBarcode,
-        inputGoodsName: inputGoodsName,
-        inputqty: inputqty,
-        inputPurchasePrice: inputPurchasePrice,
-        inputtotal: inputtotal
-      };
-      formData.push(newData);
+                  index++;
+                },
+                error: function(err) {
+                  console.log(err);
+                }
+              });
+            });
 
-      index++;
-    },
-    error: function(err) {
-      console.log(err);
-    }
-  });
-});
-
-    
-        // Panggil fungsi readTable saat halaman selesai dimuat
-        readTable();
-    
         selectBarcode.on('change', function() {
           const selectedBarcode = selectBarcode.val();
     
@@ -369,10 +328,9 @@ $('#add').on('click', function(event) {
             inputtotal.val('Rp ' + numeral(totalprice.toFixed(2)).format('0,0.00'));
           }
         }
-    
-        
-    
-        function calculateTotalAllPrice() {
+        readTable()
+      });
+      function calculateTotalAllPrice() {
           const total = $('#totalsum');
           var totalHarga = 0;
     
@@ -387,10 +345,50 @@ $('#add').on('click', function(event) {
           var hargaFormatted = (totalHarga / 100).toFixed(2);
           total.val('Rp ' + numeral(hargaFormatted).format('0,0.00'));
         }
-      });
+      // Fungsi untuk membaca tabel
+      const readTable = () => {
+        $.get(`/purchase/get/edit/item/${invoice}`).done((data) => {
+  let html = '';
+  data.forEach((item, index) => {
+    const formattedTotalPrice = 'Rp ' + numeral(item.totalprice).format('Rp0,0.00');
+    html += `
+      <tr class="table-row">
+        <td>${index + 1}</td>
+        <td>${item.itemcode}</td>
+        <td>${item.name}</td>
+        <td>${item.quantity}</td>
+        <td>${item.purchaseprice}</td>
+        <td>${formattedTotalPrice}</td>
+        <td>
+          <a href="#" class="btn btn-circle btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal${item.id}">
+            <i class="fas fa-solid fa-trash"></i>
+          </a>
+          <div class="modal fade" id="deleteModal${item.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Konfirmasi Penghapusan</h5>
+                  <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">Apakah Anda yakin ingin menghapusnya?</div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" type="button" data-dismiss="modal">Tidak</button>
+                  <a class="btn btn-primary" href="/purchases/deleteitems/${item.id}">Ya</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+  $('#purchaseitem').html(html);
+  calculateTotalAllPrice();
+});
+
+};
     </script>
-    
-    
-   
   </body>
 </html>

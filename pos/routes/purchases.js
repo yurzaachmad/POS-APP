@@ -123,7 +123,6 @@ module.exports = function (db) {
         if (err) {
           console.log(err);
         }
-        console.log(item, "ini");
         res
           .status(200)
           .json({ message: "Data berhasil dimasukkan ke database." });
@@ -145,7 +144,6 @@ module.exports = function (db) {
         if (err) {
           console.log(err);
         }
-        console.log(item, "iniii");
         res.redirect("/purchases");
       }
     );
@@ -158,7 +156,6 @@ module.exports = function (db) {
       "select * from purchases where invoice = $1",
       [invoice],
       (err, item) => {
-        console.log("this", item);
         db.query(
           "select * from users where userid = $1",
           [userid],
@@ -186,7 +183,6 @@ module.exports = function (db) {
 
   router.get("/purchase/get/edit/item/:invoice", (req, res) => {
     const { invoice } = req.params;
-    console.log(invoice);
     db.query(
       "SELECT purchaseitems.*, goods.name FROM purchaseitems LEFT JOIN goods ON purchaseitems.itemcode = goods.barcode WHERE purchaseitems.invoice = $1 ORDER BY purchaseitems.id",
       [invoice],
