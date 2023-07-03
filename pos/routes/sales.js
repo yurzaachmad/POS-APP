@@ -1,10 +1,9 @@
 var express = require("express");
 var router = express.Router();
-const isLoggedIn = require("../helpers/util");
 var moment = require("moment");
 
 module.exports = function (db) {
-  router.get("/datapurchase", async (req, res) => {
+  router.get("/datasales", async (req, res) => {
     let params = [];
 
     if (req.query.search.value) {
@@ -17,12 +16,12 @@ module.exports = function (db) {
     const sortMode = req.query.order[0].dir;
 
     const total = await db.query(
-      `select count(*) as total from purchases${
+      `select count(*) as total from sales${
         params.length > 0 ? ` where ${params.join(" or ")}` : ""
       }`
     );
     const data = await db.query(
-      `select * from purchases${
+      `select * from sales${
         params.length > 0 ? ` where ${params.join(" or ")}` : ""
       } order by ${sortBy} ${sortMode} limit ${limit} offset ${offset} `
     );
@@ -34,38 +33,37 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/purchases", function (req, res, next) {
-    db.query("select * from purchases", (err, data) => {
+
+  router.get("/sales", (req, res) => {
+    db.query("select * from sales", (err, data) => {
       if (err) {
         console.log(err);
       }
-      res.render("purchases/purchase", {
-        data: data.rows,
-      });
+      res.render("sales/sales");
     });
   });
 
-  router.get("/purchase/add", (req, res) => {
+  router.get("/sales/add", (req, res) => {
     const { userid } = req.session.user;
 
     db.query(
-      "INSERT INTO purchases (invoice, totalsum, operator) VALUES (purchaseinvoice(), 0, $1) RETURNING *",
+      "INSERT INTO sales (invoice, totalsum, operator) VALUES (salesinvoice(), 0, $1) RETURNING *",
       [userid],
       (err, data) => {
         if (err) {
           console.log(err);
         }
-        res.redirect(`/purchase/${data.rows[0].invoice}`);
+        res.redirect(`/sales/${data.rows[0].invoice}`);
       }
     );
   });
 
-  router.get("/purchase/:invoice", (req, res) => {
+  router.get("/sales/:invoice", (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
 
     db.query(
-      "select * from purchases where invoice = $1",
+      "select * from sales where invoice = $1",
       [invoice],
       (err, item) => {
         db.query(
@@ -73,13 +71,13 @@ module.exports = function (db) {
           [userid],
           (err, items) => {
             db.query("select * from goods", (err, datagoods) => {
-              db.query("select * from suppliers", (err, supply) => {
-                res.render("purchases/purchaseform", {
+              db.query("select * from customers", (err, supply) => {
+                res.render("sales/salesform", {
                   data: item.rows[0],
                   dataa: items.rows[0],
                   moment,
                   datagood: datagoods.rows,
-                  suppliers: supply.rows,
+                  customers: supply.rows,
                 });
               });
             });
@@ -89,7 +87,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/purchase/get/:barcode", (req, res) => {
+  router.get("/sales/get/:barcode", (req, res) => {
     const { barcode } = req.params;
     db.query(
       "select * from goods where barcode = $1",
@@ -103,20 +101,20 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/purchase/add/items", (req, res) => {
-    const purchasePrice = parseFloat(
-      req.body.purchasepricegoods.replace(/[^0-9.-]+/g, "")
+  router.post("/sales/add/items", (req, res) => {
+    const sellingPrice = parseFloat(
+      req.body.sellingpricegoods.replace(/[^0-9.-]+/g, "")
     );
     const totalprice = parseFloat(
       req.body.totalprice.replace(/[^0-9.-]+/g, "")
     );
     db.query(
-      "insert into purchaseitems (invoice, itemcode, quantity, purchaseprice, totalprice) values ($1, $2, $3, $4, $5) returning *",
+      "insert into saleitems (invoice, itemcode, quantity, sellingprice, totalprice) values ($1, $2, $3, $4, $5) returning *",
       [
         req.body.invoice,
         req.body.barcode,
         req.body.qtygoods,
-        purchasePrice,
+        sellingPrice,
         totalprice,
       ],
       (err, item) => {
@@ -130,30 +128,31 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/purchase/add/purchases", (req, res) => {
+  router.post("/sales/add/sales", (req, res) => {
     const invoice = req.body.invoice;
-    const formattedValue = req.body.totalsum.replace(/[^0-9.,-]/g, ""); // Menghapus karakter selain angka, koma, dan tanda minus
+    const formattedValue = req.body.totalsum.replace(/[^0-9.,-]/g, "");
+    const formattedValuechange = req.body.moneychange.replace(/[^0-9.,-]/g, ""); // Menghapus karakter selain angka, koma, dan tanda minus
     const totalsum = parseFloat(formattedValue.replace(",", "")); // Menghapus koma sebagai pemisah ribuan
-
-    const { supply } = req.body;
+    const change = parseFloat(formattedValuechange.replace(",", ""));
+    const { customer, pay } = req.body;
     const { userid } = req.session.user;
     db.query(
-      "update purchases set totalsum = $1, supplier = $2, operator = $3 WHERE invoice = $4",
-      [totalsum, supply, userid, invoice],
+      "update sales set totalsum = $1, customer = $2, operator = $3, pay = $4, change = $5 WHERE invoice = $6",
+      [totalsum, customer, userid, pay, change, invoice],
       (err, item) => {
         if (err) {
           console.log(err);
         }
-        res.redirect("/purchases");
+        res.redirect("/sales");
       }
     );
   });
 
-  router.get("/purchase/edit/:invoice", (req, res) => {
+  router.get("/sales/edit/:invoice", (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
     db.query(
-      "select * from purchases where invoice = $1",
+      "select * from sales where invoice = $1",
       [invoice],
       (err, item) => {
         db.query(
@@ -161,14 +160,14 @@ module.exports = function (db) {
           [userid],
           (err, items) => {
             db.query("select * from goods", (err, datagoods) => {
-              db.query("select * from suppliers", (err, supply) => {
-                db.query("select * from purchaseitems", (err, itempurchase) => {
-                  res.render("purchases/purchaseform", {
+              db.query("select * from customers", (err, customer) => {
+                db.query("select * from saleitems", (err, itempurchase) => {
+                  res.render("sales/salesform", {
                     data: item.rows[0],
                     dataa: items.rows[0],
                     moment,
                     datagood: datagoods.rows,
-                    suppliers: supply.rows,
+                    customers: customer.rows,
                     itemspurchase: itempurchase.rows[0],
                   });
                 });
@@ -180,24 +179,24 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/purchase/get/edit/item/:invoice", (req, res) => {
+  router.get("/sales/get/edit/item/:invoice", (req, res) => {
     const { invoice } = req.params;
     db.query(
-      "SELECT purchaseitems.*, goods.name FROM purchaseitems LEFT JOIN goods ON purchaseitems.itemcode = goods.barcode WHERE purchaseitems.invoice = $1 ORDER BY purchaseitems.id",
+      "SELECT saleitems.*, goods.name FROM saleitems LEFT JOIN goods ON saleitems.itemcode = goods.barcode WHERE saleitems.invoice = $1 ORDER BY saleitems.id",
       [invoice],
-      (err, itempurchase) => {
+      (err, itemsales) => {
         if (err) {
           console.log(err);
         }
-        res.json(itempurchase.rows);
+        res.json(itemsales.rows);
       }
     );
   });
 
-  router.get("/purchases/deleteitems/:id", (req, res) => {
+  router.get("/sales/deleteitems/:id", (req, res) => {
     const { id } = req.params;
     db.query(
-      "SELECT invoice FROM purchaseitems WHERE id = $1",
+      "SELECT invoice FROM saleitems WHERE id = $1",
       [id],
       (err, result) => {
         if (err) {
@@ -206,30 +205,30 @@ module.exports = function (db) {
 
         const invoice = result.rows[0].invoice;
         db.query(
-          "delete from purchaseitems where id = $1",
+          "delete from saleitems where id = $1",
           [id],
           (err, itempurchase) => {
             if (err) {
               console.log(err);
             }
-            res.redirect(`/purchase/edit/${invoice}`);
+            res.redirect(`/sales/edit/${invoice}`);
           }
         );
       }
     );
   });
 
-  router.get("/purchase/delete/:id", (req, res) => {
+  router.get("/sales/delete/:id", (req, res) => {
     const id = req.params.id;
-    db.query("delete from purchaseitems where invoice = $1", [id], (err) => {
+    db.query("delete from saleitems where invoice = $1", [id], (err) => {
       if (err) {
-        console.log("hapus data purchase item gagal");
+        console.log("hapus data sale item gagal");
       }
-      db.query("delete from purchases where invoice = $1", [id], (err) => {
+      db.query("delete from sales where invoice = $1", [id], (err) => {
         if (err) {
-          console.log("hapus data purchase gagal");
+          console.log("hapus data sales gagal");
         }
-        res.redirect("/purchases");
+        res.redirect("/sales");
       });
     });
   });

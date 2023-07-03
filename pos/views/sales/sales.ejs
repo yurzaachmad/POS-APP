@@ -13,7 +13,7 @@
       src="https://kit.fontawesome.com/6ea2cb925f.js"
       crossorigin="anonymous"
     ></script>
-    <title>POS - Purchases</title>
+    <title>POS - Sales</title>
 
     <!-- Custom fonts for this template-->
     <link rel="stylesheet" href="/stylesheets/all.min.css" />
@@ -43,11 +43,11 @@
           <!-- End of Topbar -->
         <div class="container-fluid">
           <!-- Begin Page Content -->
-          <h1 class="h3 mb-2 text-gray-800">Purchases</h1>
-          <h5>This is page of Purchases</h5>
+          <h1 class="h3 mb-2 text-gray-800">Sales</h1>
+          <h5>This is page of Sales</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="/purchase/add" class="btn btn-primary btn-icon-split">
+                <a href="/sales/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -56,13 +56,15 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="purchases" width="100%" cellspacing="0">
+                    <table class="table table-bordered" id="sales" width="100%" cellspacing="0">
                       <thead>
                           <tr>
                               <th>Invoice</th>
                               <th>Time</th>
                               <th>Total Summary</th>
-                              <th>Supplier</th>
+                              <th>Pay</th>
+                              <th>Change</th>
+                              <th>Customer</th>
                               <th>Action</th>
                           </tr>
                       </thead>
@@ -71,7 +73,9 @@
                             <th>Invoice</th>
                             <th>Time</th>
                             <th>Total Summary</th>
-                            <th>Supplier</th>
+                            <th>Pay</th>
+                            <th>Change</th>
+                            <th>Customer</th>
                             <th>Action</th>
                           </tr>
                       </tfoot>
@@ -96,7 +100,7 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
-       <!-- delete Modal-->
+        <!-- delete Modal-->
  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
  aria-hidden="true">
  <div class="modal-dialog" role="document">
@@ -115,6 +119,7 @@
      </div>
  </div>
 </div>
+
     <!-- Logout Modal-->
     <%- include('../partials/logoutModal.ejs')%>
 
@@ -133,11 +138,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     <script>
       $(document).ready(function () {
-          $('#purchases').DataTable({
+          $('#sales').DataTable({
               "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
               "processing": true,
               "serverSide": true,
-              "ajax": "/datapurchase",
+              "ajax": "/datasales",
               "columns": [
                   { "data": "invoice" },
                   { "data": "time" },
@@ -149,12 +154,28 @@
                       return 'Rp ' + formattedTotal;
                     }
                   },
-                  { "data": "supplier" },
+                  {
+                    "data": "pay",
+                    "render": function (data, type, row) {
+                      // Mengonversi nilai pay menjadi format rupiah
+                      var formattedTotal = numeral(data).format('0,0.00');
+                      return 'Rp ' + formattedTotal;
+                    }
+                  },
+                  {
+                    "data": "change",
+                    "render": function (data, type, row) {
+                      // Mengonversi nilai change menjadi format rupiah
+                      var formattedTotal = numeral(data).format('0,0.00');
+                      return 'Rp ' + formattedTotal;
+                    }
+                  },
+                  { "data": "customer" },
                   {
                     "render": function (data, type, row) {
                         return `
                             <td>
-                                <a class="btn btn-success btn-circle" href="/purchase/edit/${row.invoice}">
+                                <a class="btn btn-success btn-circle" href="/sales/edit/${row.invoice}">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-info-circle"></i>
                                     </span>
@@ -172,9 +193,7 @@
               ]
           });
       });
-    </script>
-    <script>
-      $(document).ready(function() {
+   
     var deleteId;
   
     $(document).on('click', '.btn-danger', function(event) {
@@ -187,7 +206,7 @@
       event.preventDefault();
       if (deleteId) {
         $.ajax({
-          url: '/purchase/delete/' + deleteId,
+          url: '/sales/delete/' + deleteId,
           type: 'GET',
           success: function() {
             console.log('Data berhasil dihapus');
@@ -200,7 +219,6 @@
         });
       }
     });
-  });
     </script>
   </body>
 </html>
