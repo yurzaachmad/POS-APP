@@ -134,6 +134,7 @@
                     <th>Qty</th>
                     <th>Price</th>
                     <th>Total Price</th>
+                    <th>Action</th>
                   </tr>
                   </thead>
                   <tbody id="purchaseitem">
@@ -220,38 +221,6 @@
         const inputPurchasePrice = $('#purchasepricegoods');
         const inputqty = $('#qtygoods');
         const inputtotal = $('#totalprice');
-   
-        const addToTable = () => {
-          const selectBarcode = $('#selectBarcode').val();
-          const inputGoodsName = $('#namegoods').val();
-          const inputStock = $('#stockgoods').val();
-          const inputPurchasePrice = $('#purchasepricegoods').val();
-          const inputqty = $('#qtygoods').val();
-          const inputtotal = $('#totalprice').val();
-
-            var row = `
-              <tr class="table-row">
-                <td></td>
-                <td>${selectBarcode}</td>
-                <td>${inputGoodsName}</td>
-                <td>${inputqty}</td>
-                <td>${inputPurchasePrice}</td>
-                <td>${inputtotal}</td>
-              </tr>
-            `;
-
-            $('#purchaseitem').append(row);
-
-            // Update index values in the table
-            $('.table-row').each(function(index) {
-              $(this).find('td:first').text(index + 1);
-            });
-
-            calculateTotalAllPrice();
-        };
-
-            var formData = [];
-            var index = 1;
 
             $('#add').on('click', function(event) {
               event.preventDefault();
@@ -267,25 +236,8 @@
                   totalprice: $('#totalprice').val()
                 },
                 success: function(response) {
-                  addToTable();
+                  readTable()
 
-                  const selectBarcode = $('#selectBarcode').val();
-                  const inputGoodsName = $('#namegoods').val();
-                  const inputStock = $('#stockgoods').val();
-                  const inputPurchasePrice = $('#purchasepricegoods').val();
-                  const inputqty = $('#qtygoods').val();
-                  const inputtotal = $('#totalprice').val();
-
-                  var newData = {
-                    selectBarcode: selectBarcode,
-                    inputGoodsName: inputGoodsName,
-                    inputqty: inputqty,
-                    inputPurchasePrice: inputPurchasePrice,
-                    inputtotal: inputtotal
-                  };
-                  formData.push(newData);
-
-                  index++;
                 },
                 error: function(err) {
                   console.log(err);
@@ -345,11 +297,13 @@
           var hargaFormatted = (totalHarga / 100).toFixed(2);
           total.val('Rp ' + numeral(hargaFormatted).format('0,0.00'));
         }
+        let iddelete;
       // Fungsi untuk membaca tabel
       const readTable = () => {
         $.get(`/purchase/get/edit/item/${invoice}`).done((data) => {
   let html = '';
   data.forEach((item, index) => {
+    iddelete = item.id
     const formattedTotalPrice = 'Rp ' + numeral(item.totalprice).format('Rp0,0.00');
     html += `
       <tr class="table-row">

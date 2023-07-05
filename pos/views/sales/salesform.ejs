@@ -234,38 +234,6 @@
             const inputqty = $('#qtygoods');
             const inputtotal = $('#totalprice');
        
-            const addToTable = () => {
-              const selectBarcode = $('#selectBarcode').val();
-              const inputGoodsName = $('#namegoods').val();
-              const inputStock = $('#stockgoods').val();
-              const inputSellingPrice = $('#sellingpricegoods').val();
-              const inputqty = $('#qtygoods').val();
-              const inputtotal = $('#totalprice').val();
-    
-                var row = `
-                  <tr class="table-row">
-                    <td></td>
-                    <td>${selectBarcode}</td>
-                    <td>${inputGoodsName}</td>
-                    <td>${inputqty}</td>
-                    <td>${inputSellingPrice}</td>
-                    <td>${inputtotal}</td>
-                  </tr>
-                `;
-    
-                $('#salesitem').append(row);
-    
-                // Update index values in the table
-                $('.table-row').each(function(index) {
-                  $(this).find('td:first').text(index + 1);
-                });
-    
-                calculateTotalAllPrice();
-            };
-    
-                var formData = [];
-                var index = 1;
-    
                 $('#add').on('click', function(event) {
                   event.preventDefault();
     
@@ -280,25 +248,7 @@
                       totalprice: $('#totalprice').val()
                     },
                     success: function(response) {
-                      addToTable();
-    
-                      const selectBarcode = $('#selectBarcode').val();
-                      const inputGoodsName = $('#namegoods').val();
-                      const inputStock = $('#stockgoods').val();
-                      const inputSellingPrice = $('#sellingpricegoods').val();
-                      const inputqty = $('#qtygoods').val();
-                      const inputtotal = $('#totalprice').val();
-    
-                      var newData = {
-                        selectBarcode: selectBarcode,
-                        inputGoodsName: inputGoodsName,
-                        inputqty: inputqty,
-                        inputSellingPrice: inputSellingPrice,
-                        inputtotal: inputtotal
-                      };
-                      formData.push(newData);
-    
-                      index++;
+                      readTable()
                     },
                     error: function(err) {
                       console.log(err);
