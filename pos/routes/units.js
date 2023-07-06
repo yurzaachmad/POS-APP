@@ -38,6 +38,7 @@ module.exports = function (db) {
   });
 
   router.get("/units", isLoggedIn, isAdmin, function (req, res, next) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from units", (err, data) => {
       if (err) {
         console.log(err);
@@ -46,15 +47,18 @@ module.exports = function (db) {
       res.render("units/unit", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
 
   router.get("/unit/add", isLoggedIn, isAdmin, (req, res) => {
+    const stockAlert = req.session.stockAlert;
     res.render("units/unitform", {
       data: {},
       renderFrom: "add",
       user: req.session.user,
+      stockAlert,
     });
   });
 
@@ -73,6 +77,7 @@ module.exports = function (db) {
 
   router.get("/unit/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
+    const stockAlert = req.session.stockAlert;
     db.query("select * from units where unit = $1", [id], (err, item) => {
       if (err) {
         console.log(err);
@@ -82,6 +87,7 @@ module.exports = function (db) {
         data: item.rows[0],
         renderFrom: "edit",
         user: req.session.user,
+        stockAlert,
       });
     });
   });

@@ -34,6 +34,7 @@ module.exports = function (db) {
     res.json(response);
   });
   router.get("/customers", function (req, res) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from customers", (err, data) => {
       if (err) {
         console.log(err);
@@ -42,15 +43,18 @@ module.exports = function (db) {
       res.render("customers/customer", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
 
   router.get("/customers/add", function (req, res) {
+    const stockAlert = req.session.stockAlert;
     res.render("customers/customerform", {
       data: {},
       renderFrom: "add",
       user: req.session.user,
+      stockAlert,
     });
   });
 
@@ -68,6 +72,7 @@ module.exports = function (db) {
   });
 
   router.get("/customer/edit/:id", (req, res) => {
+    const stockAlert = req.session.stockAlert;
     const id = req.params.id;
     db.query(
       "select * from customers where customerid = $1",
@@ -81,6 +86,7 @@ module.exports = function (db) {
           data: item.rows[0],
           renderFrom: "edit",
           user: req.session.user,
+          stockAlert,
         });
       }
     );

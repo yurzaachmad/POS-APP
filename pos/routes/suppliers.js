@@ -36,6 +36,7 @@ module.exports = function (db) {
   });
 
   router.get("/suppliers", function (req, res, next) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from suppliers", (err, data) => {
       if (err) {
         console.log(err);
@@ -43,15 +44,18 @@ module.exports = function (db) {
       res.render("suppliers/supplier", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
 
   router.get("/supplier/add", (req, res) => {
+    const stockAlert = req.session.stockAlert;
     res.render("suppliers/supplierform", {
       data: {},
       renderFrom: "add",
       user: req.session.user,
+      stockAlert,
     });
   });
 
@@ -70,6 +74,7 @@ module.exports = function (db) {
 
   router.get("/supplier/edit/:id", (req, res) => {
     const id = req.params.id;
+    const stockAlert = req.session.stockAlert;
     db.query(
       "select * from suppliers where supplierid = $1",
       [id],
@@ -82,6 +87,7 @@ module.exports = function (db) {
           data: item.rows[0],
           renderFrom: "edit",
           user: req.session.user,
+          stockAlert,
         });
       }
     );

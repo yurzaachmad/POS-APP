@@ -40,6 +40,7 @@ module.exports = function (db) {
     res.json(response);
   });
   router.get("/users", isLoggedIn, isAdmin, function (req, res, next) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from users", (err, data) => {
       if (err) {
         console.log(err);
@@ -47,15 +48,18 @@ module.exports = function (db) {
       res.render("users/user", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
 
   router.get("/user/add", isLoggedIn, isAdmin, (req, res) => {
+    const stockAlert = req.session.stockAlert;
     res.render("users/addform", {
       data: {},
       isEdit: false,
       user: req.session.user,
+      stockAlert,
     });
   });
 
@@ -76,6 +80,7 @@ module.exports = function (db) {
 
   router.get("/user/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
+    const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [id], (err, item) => {
       if (err) {
         console.log(err);
@@ -85,6 +90,7 @@ module.exports = function (db) {
         data: item.rows[0],
         isEdit: true,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
@@ -118,6 +124,7 @@ module.exports = function (db) {
 
   router.get("/user/profile", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
+    const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [userid], (err, data) => {
       res.render("users/profileform", {
         data: data.rows[0],
@@ -128,13 +135,13 @@ module.exports = function (db) {
         errorMessage: {},
         isEdit: true,
         isProfile: false,
+        stockAlert,
       });
     });
   });
 
   router.post("/user/profile", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
-    console.log(userid);
     db.query(
       "update users set name = $1, email =$2 where userid = $3",
       [req.body.name, req.body.email, userid],
@@ -151,6 +158,7 @@ module.exports = function (db) {
 
   router.get("/user/password", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
+    const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [userid], (err, data) => {
       res.render("users/profileform", {
         data: data.rows[0],
@@ -161,6 +169,7 @@ module.exports = function (db) {
         errorRegister: req.flash("errorRegister"),
         isEdit: false,
         isProfile: true,
+        stockAlert,
       });
     });
   });

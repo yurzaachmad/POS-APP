@@ -35,11 +35,23 @@ module.exports = function (db) {
   });
 
   router.get("/sales", (req, res) => {
-    db.query("select * from sales", (err, data) => {
+    db.query("SELECT * FROM goods", (err, goodsData) => {
       if (err) {
         console.log(err);
+        return res
+          .status(500)
+          .json({ message: "Terjadi kesalahan pada server." });
       }
-      res.render("sales/sales", { user: req.session.user });
+
+      // Menyimpan data stok ke dalam session
+      const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+      req.session.stockAlert = stockAlert;
+      db.query("select * from sales", (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+        res.render("sales/sales", { user: req.session.user, stockAlert });
+      });
     });
   });
 
@@ -61,6 +73,7 @@ module.exports = function (db) {
   router.get("/sales/:invoice", (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
+    const stockAlert = req.session.stockAlert;
 
     db.query(
       "select * from sales where invoice = $1",
@@ -79,6 +92,7 @@ module.exports = function (db) {
                   datagood: datagoods.rows,
                   customers: supply.rows,
                   user: req.session.user,
+                  stockAlert,
                 });
               });
             });
@@ -109,22 +123,52 @@ module.exports = function (db) {
     const totalprice = parseFloat(
       req.body.totalprice.replace(/[^0-9.-]+/g, "")
     );
+
+    const { invoice, barcode, qtygoods } = req.body;
+
+    // Check stock of the item
     db.query(
-      "insert into saleitems (invoice, itemcode, quantity, sellingprice, totalprice) values ($1, $2, $3, $4, $5) returning *",
-      [
-        req.body.invoice,
-        req.body.barcode,
-        req.body.qtygoods,
-        sellingPrice,
-        totalprice,
-      ],
-      (err, item) => {
+      "SELECT * FROM goods WHERE barcode = $1",
+      [barcode],
+      (err, result) => {
         if (err) {
           console.log(err);
+          return res
+            .status(500)
+            .json({ message: "Terjadi kesalahan pada server." });
         }
-        res
-          .status(200)
-          .json({ message: "Data berhasil dimasukkan ke database." });
+
+        const item = result.rows[0];
+
+        if (!item) {
+          return res.status(404).json({ message: "Barang tidak ditemukan." });
+        }
+
+        if (item.stock < 5) {
+          const stockAlert = {
+            stock: item.stock,
+            name: item.name,
+            barcode: item.barcode,
+          };
+          console.log(stockAlert, "ini");
+        }
+
+        // Perform the insertion into the saleitems table
+        db.query(
+          "INSERT INTO saleitems (invoice, itemcode, quantity, sellingprice, totalprice) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+          [invoice, barcode, qtygoods, sellingPrice, totalprice],
+          (err, result) => {
+            if (err) {
+              console.log(err);
+              return res
+                .status(500)
+                .json({ message: "Terjadi kesalahan pada server." });
+            }
+            res
+              .status(200)
+              .json({ message: "Data berhasil dimasukkan ke database." });
+          }
+        );
       }
     );
   });
@@ -152,6 +196,7 @@ module.exports = function (db) {
   router.get("/sales/edit/:invoice", (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
+    const stockAlert = req.session.stockAlert;
     db.query(
       "select * from sales where invoice = $1",
       [invoice],
@@ -171,6 +216,7 @@ module.exports = function (db) {
                     customers: customer.rows,
                     itemspurchase: itempurchase.rows[0],
                     user: req.session.user,
+                    stockAlert,
                   });
                 });
               });

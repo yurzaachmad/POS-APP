@@ -91,39 +91,53 @@ module.exports = function (db) {
   });
 
   router.get("/dashboard", isLoggedIn, isAdmin, function (req, res, next) {
-    db.query("select * from purchases", (err, data) => {
+    db.query("SELECT * FROM goods", (err, goodsData) => {
       if (err) {
         console.log(err);
+        return res
+          .status(500)
+          .json({ message: "Terjadi kesalahan pada server." });
       }
-      const totalSum = data.rows.reduce((accumulator, current) => {
-        const sum = parseFloat(current.totalsum);
-        return accumulator + sum;
-      }, 0);
-      db.query("select * from sales", (err, item) => {
-        const totalSale = item.rows.reduce((accumulator, current) => {
+
+      // Menyimpan data stok ke dalam session
+      const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+      req.session.stockAlert = stockAlert;
+
+      db.query("select * from purchases", (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+        const totalSum = data.rows.reduce((accumulator, current) => {
           const sum = parseFloat(current.totalsum);
           return accumulator + sum;
         }, 0);
-        const earnings = totalSale - totalSum;
-        const saled = item.rows.length;
-        const fill = item.rows;
-        var directCount = 0;
-        var customerCount = 0;
+        db.query("select * from sales", (err, item) => {
+          const totalSale = item.rows.reduce((accumulator, current) => {
+            const sum = parseFloat(current.totalsum);
+            return accumulator + sum;
+          }, 0);
+          const earnings = totalSale - totalSum;
+          const saled = item.rows.length;
+          const fill = item.rows;
+          var directCount = 0;
+          var customerCount = 0;
 
-        fill.forEach(function (item) {
-          if (item.customer === 4) {
-            directCount++;
-          } else {
-            customerCount++;
-          }
-        });
+          fill.forEach(function (item) {
+            if (item.customer === 4) {
+              directCount++;
+            } else {
+              customerCount++;
+            }
+          });
 
-        res.render("dashboard", {
-          totalSum,
-          totalSale,
-          earnings,
-          saled,
-          user: req.session.user,
+          res.render("dashboard", {
+            totalSum,
+            totalSale,
+            earnings,
+            saled,
+            user: req.session.user,
+            stockAlert,
+          });
         });
       });
     });

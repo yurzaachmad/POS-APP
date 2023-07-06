@@ -35,6 +35,7 @@ module.exports = function (db) {
     res.json(response);
   });
   router.get("/purchases", function (req, res, next) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from purchases", (err, data) => {
       if (err) {
         console.log(err);
@@ -42,6 +43,7 @@ module.exports = function (db) {
       res.render("purchases/purchase", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
@@ -64,6 +66,7 @@ module.exports = function (db) {
   router.get("/purchase/:invoice", (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
+    const stockAlert = req.session.stockAlert;
 
     db.query(
       "select * from purchases where invoice = $1",
@@ -82,6 +85,7 @@ module.exports = function (db) {
                   datagood: datagoods.rows,
                   suppliers: supply.rows,
                   user: req.session.user,
+                  stockAlert,
                 });
               });
             });
@@ -146,7 +150,18 @@ module.exports = function (db) {
         if (err) {
           console.log(err);
         }
-        res.redirect("/purchases");
+        db.query("SELECT * FROM goods", (err, goodsData) => {
+          if (err) {
+            console.log(err);
+            return res
+              .status(500)
+              .json({ message: "Terjadi kesalahan pada server." });
+          }
+          // Menyimpan data stok ke dalam session
+          const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+          req.session.stockAlert = stockAlert;
+          res.redirect("/purchases");
+        });
       }
     );
   });
@@ -154,6 +169,7 @@ module.exports = function (db) {
   router.get("/purchase/edit/:invoice", (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
+    const stockAlert = req.session.stockAlert;
     db.query(
       "select * from purchases where invoice = $1",
       [invoice],
@@ -173,6 +189,7 @@ module.exports = function (db) {
                     suppliers: supply.rows,
                     itemspurchase: itempurchase.rows[0],
                     user: req.session.user,
+                    stockAlert,
                   });
                 });
               });
@@ -215,7 +232,21 @@ module.exports = function (db) {
             if (err) {
               console.log(err);
             }
-            res.redirect(`/purchase/edit/${invoice}`);
+            db.query("SELECT * FROM goods", (err, goodsData) => {
+              if (err) {
+                console.log(err);
+                return res
+                  .status(500)
+                  .json({ message: "Terjadi kesalahan pada server." });
+              }
+
+              // Menyimpan data stok ke dalam session
+              const stockAlert = goodsData.rows.filter(
+                (item) => item.stock < 5
+              );
+              req.session.stockAlert = stockAlert;
+              res.redirect(`/purchase/edit/${invoice}`);
+            });
           }
         );
       }
@@ -232,7 +263,19 @@ module.exports = function (db) {
         if (err) {
           console.log("hapus data purchase gagal");
         }
-        res.redirect("/purchases");
+        db.query("SELECT * FROM goods", (err, goodsData) => {
+          if (err) {
+            console.log(err);
+            return res
+              .status(500)
+              .json({ message: "Terjadi kesalahan pada server." });
+          }
+
+          // Menyimpan data stok ke dalam session
+          const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+          req.session.stockAlert = stockAlert;
+          res.redirect("/purchases");
+        });
       });
     });
   });

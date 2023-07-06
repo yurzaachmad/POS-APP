@@ -31,7 +31,6 @@ module.exports = function (db) {
         params.length > 0 ? ` where ${params.join(" or ")}` : ""
       } order by ${sortBy} ${sortMode} limit ${limit} offset ${offset} `
     );
-    console.log("sekarang", data);
     const response = {
       draw: Number(req.query.draw),
       recordsTotal: total.rows[0].total,
@@ -42,24 +41,27 @@ module.exports = function (db) {
   });
 
   router.get("/goods", isLoggedIn, isAdmin, function (req, res, next) {
+    const stockAlert = req.session.stockAlert;
     db.query("select * from goods", (err, data) => {
       if (err) {
         console.log(err);
       }
-      // console.log("ini", data.rows);
       res.render("goods/good", {
         data: data.rows,
         user: req.session.user,
+        stockAlert,
       });
     });
   });
 
   router.get("/good/add", isLoggedIn, isAdmin, (req, res) => {
+    const stockAlert = req.session.stockAlert;
     res.render("goods/goodform", {
       data: {},
       item: data.rows,
       renderFrom: "add",
       user: req.session.user,
+      stockAlert,
     });
   });
 
@@ -107,6 +109,7 @@ module.exports = function (db) {
 
   router.get("/good/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
+    const stockAlert = req.session.stockAlert;
     db.query("select * from goods where barcode = $1", [id], (err, items) => {
       db.query("select * from units", (err, data) => {
         if (err) {
@@ -117,6 +120,7 @@ module.exports = function (db) {
           item: data.rows,
           renderFrom: "edit",
           user: req.session.user,
+          stockAlert,
         });
       });
     });
