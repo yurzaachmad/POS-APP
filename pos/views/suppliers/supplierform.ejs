@@ -130,5 +130,21 @@
     <!-- Page level custom scripts -->
     <script src="/javascripts/chart-area-demo.js"></script>
     <script src="/javascripts/chart-pie-demo.js"></script>
+    <script>
+
+var message = document.getElementById('messages')
+var alerts = document.getElementById('alert')
+var navbar = document.getElementById('navbar');
+var users = document.getElementById('users');
+var collapseUtilities = document.getElementById('collapseUtilities');
+
+if ('<%= user.role %>' !== 'admin') {
+navbar.style.display = 'none';
+users.style.display = 'none';
+collapseUtilities.style.display = 'none';
+message.style.display = 'none';
+alerts.style.display = 'none';
+}
+    </script>
   </body>
 </html>

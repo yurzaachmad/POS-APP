@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+const isLoggedIn = require("../helpers/util");
+const isAdmin = require("../helpers/utill");
 
 module.exports = function (db) {
   router.get("/dataearn", async (req, res) => {
@@ -88,7 +90,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/dashboard", function (req, res, next) {
+  router.get("/dashboard", isLoggedIn, isAdmin, function (req, res, next) {
     db.query("select * from purchases", (err, data) => {
       if (err) {
         console.log(err);

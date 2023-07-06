@@ -34,7 +34,11 @@ module.exports = function (db) {
               return res.redirect("/login");
             }
             req.session.user = data.rows[0];
-            res.redirect("/dashboard");
+            if (req.session.user.role === "admin") {
+              res.redirect("/dashboard");
+            } else {
+              res.redirect("/sales");
+            }
           }
         );
         // Store hash in your password DB.

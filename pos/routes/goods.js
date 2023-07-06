@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var path = require("path");
+const isLoggedIn = require("../helpers/util");
+const isAdmin = require("../helpers/utill");
 
 module.exports = function (db) {
   router.get("/datagoods", async (req, res) => {
@@ -39,7 +41,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/goods", function (req, res, next) {
+  router.get("/goods", isLoggedIn, isAdmin, function (req, res, next) {
     db.query("select * from goods", (err, data) => {
       if (err) {
         console.log(err);
@@ -52,7 +54,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/good/add", (req, res) => {
+  router.get("/good/add", isLoggedIn, isAdmin, (req, res) => {
     res.render("goods/goodform", {
       data: {},
       item: data.rows,
@@ -103,7 +105,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/good/edit/:id", (req, res) => {
+  router.get("/good/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
     db.query("select * from goods where barcode = $1", [id], (err, items) => {
       db.query("select * from units", (err, data) => {

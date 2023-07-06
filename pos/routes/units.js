@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+const isLoggedIn = require("../helpers/util");
+const isAdmin = require("../helpers/utill");
 
 module.exports = function (db) {
   router.get("/dataunits", async (req, res) => {
@@ -35,7 +37,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/units", function (req, res, next) {
+  router.get("/units", isLoggedIn, isAdmin, function (req, res, next) {
     db.query("select * from units", (err, data) => {
       if (err) {
         console.log(err);
@@ -48,7 +50,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/unit/add", (req, res) => {
+  router.get("/unit/add", isLoggedIn, isAdmin, (req, res) => {
     res.render("units/unitform", {
       data: {},
       renderFrom: "add",
@@ -69,7 +71,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/unit/edit/:id", (req, res) => {
+  router.get("/unit/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
     db.query("select * from units where unit = $1", [id], (err, item) => {
       if (err) {
