@@ -40,15 +40,19 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      // console.log("ini", data.rows);
       res.render("suppliers/supplier", {
         data: data.rows,
+        user: req.session.user,
       });
     });
   });
 
   router.get("/supplier/add", (req, res) => {
-    res.render("suppliers/supplierform", { data: {}, renderFrom: "add" });
+    res.render("suppliers/supplierform", {
+      data: {},
+      renderFrom: "add",
+      user: req.session.user,
+    });
   });
 
   router.post("/supplier/add", (req, res) => {
@@ -77,6 +81,7 @@ module.exports = function (db) {
         res.render("suppliers/supplierform", {
           data: item.rows[0],
           renderFrom: "edit",
+          user: req.session.user,
         });
       }
     );

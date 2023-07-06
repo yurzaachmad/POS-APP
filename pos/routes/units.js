@@ -43,12 +43,17 @@ module.exports = function (db) {
       // console.log("ini", data.rows);
       res.render("units/unit", {
         data: data.rows,
+        user: req.session.user,
       });
     });
   });
 
   router.get("/unit/add", (req, res) => {
-    res.render("units/unitform", { data: {}, renderFrom: "add" });
+    res.render("units/unitform", {
+      data: {},
+      renderFrom: "add",
+      user: req.session.user,
+    });
   });
 
   router.post("/unit/add", (req, res) => {
@@ -71,7 +76,11 @@ module.exports = function (db) {
         console.log(err);
       }
       console.log(item.rows);
-      res.render("units/unitform", { data: item.rows[0], renderFrom: "edit" });
+      res.render("units/unitform", {
+        data: item.rows[0],
+        renderFrom: "edit",
+        user: req.session.user,
+      });
     });
   });
 

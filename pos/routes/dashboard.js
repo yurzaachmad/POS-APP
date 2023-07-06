@@ -116,7 +116,13 @@ module.exports = function (db) {
           }
         });
 
-        res.render("dashboard", { totalSum, totalSale, earnings, saled });
+        res.render("dashboard", {
+          totalSum,
+          totalSale,
+          earnings,
+          saled,
+          user: req.session.user,
+        });
       });
     });
   });

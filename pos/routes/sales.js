@@ -39,7 +39,7 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      res.render("sales/sales");
+      res.render("sales/sales", { user: req.session.user });
     });
   });
 
@@ -78,6 +78,7 @@ module.exports = function (db) {
                   moment,
                   datagood: datagoods.rows,
                   customers: supply.rows,
+                  user: req.session.user,
                 });
               });
             });
@@ -169,6 +170,7 @@ module.exports = function (db) {
                     datagood: datagoods.rows,
                     customers: customer.rows,
                     itemspurchase: itempurchase.rows[0],
+                    user: req.session.user,
                   });
                 });
               });

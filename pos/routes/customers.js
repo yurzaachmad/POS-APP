@@ -41,6 +41,7 @@ module.exports = function (db) {
       console.log("ini", data);
       res.render("customers/customer", {
         data: data.rows,
+        user: req.session.user,
       });
     });
   });
@@ -49,6 +50,7 @@ module.exports = function (db) {
     res.render("customers/customerform", {
       data: {},
       renderFrom: "add",
+      user: req.session.user,
     });
   });
 
@@ -78,6 +80,7 @@ module.exports = function (db) {
         res.render("customers/customerform", {
           data: item.rows[0],
           renderFrom: "edit",
+          user: req.session.user,
         });
       }
     );

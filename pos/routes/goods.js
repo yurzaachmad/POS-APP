@@ -47,21 +47,17 @@ module.exports = function (db) {
       // console.log("ini", data.rows);
       res.render("goods/good", {
         data: data.rows,
+        user: req.session.user,
       });
     });
   });
 
   router.get("/good/add", (req, res) => {
-    db.query("select * from units", (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-      // console.log("ini", data.rows);
-      res.render("goods/goodform", {
-        data: {},
-        item: data.rows,
-        renderFrom: "add",
-      });
+    res.render("goods/goodform", {
+      data: {},
+      item: data.rows,
+      renderFrom: "add",
+      user: req.session.user,
     });
   });
 
@@ -114,12 +110,11 @@ module.exports = function (db) {
         if (err) {
           console.log(err);
         }
-        // console.log(items.rows);
-        // console.log(items.rows[0].unit);
         res.render("goods/goodform", {
           data: items.rows[0],
           item: data.rows,
           renderFrom: "edit",
+          user: req.session.user,
         });
       });
     });

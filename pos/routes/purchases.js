@@ -41,6 +41,7 @@ module.exports = function (db) {
       }
       res.render("purchases/purchase", {
         data: data.rows,
+        user: req.session.user,
       });
     });
   });
@@ -80,6 +81,7 @@ module.exports = function (db) {
                   moment,
                   datagood: datagoods.rows,
                   suppliers: supply.rows,
+                  user: req.session.user,
                 });
               });
             });
@@ -170,6 +172,7 @@ module.exports = function (db) {
                     datagood: datagoods.rows,
                     suppliers: supply.rows,
                     itemspurchase: itempurchase.rows[0],
+                    user: req.session.user,
                   });
                 });
               });

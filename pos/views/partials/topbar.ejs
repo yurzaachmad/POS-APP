@@ -240,22 +240,26 @@
         aria-expanded="false"
       >
         <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-          >Douglas McGee</span
+          ><%= user.name %></span
         >
-        <img class="img-profile rounded-circle" src="img/undraw_profile.svg" />
+        <img
+          src="/images/undraw_profile.svg"
+          alt="avatar"
+          style="margin-right: 70px"
+        />
       </a>
       <!-- Dropdown - User Information -->
       <div
         class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
         aria-labelledby="userDropdown"
       >
-        <a class="dropdown-item" href="#">
+        <a class="dropdown-item" href="/user/profile">
           <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
           Profile
         </a>
-        <a class="dropdown-item" href="#">
-          <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-          Settings
+        <a class="dropdown-item" href="/user/password">
+          <i class="fa-solid fa-key"></i>
+          Change Password
         </a>
         <a class="dropdown-item" href="#">
           <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
