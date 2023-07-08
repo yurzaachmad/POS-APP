@@ -50,6 +50,11 @@
         <div class="container-fluid">
           <!-- Begin Page Content -->
           <h1 class="h3 mb-2 text-gray-800">Goods</h1>
+          <%if (error.length > 0){%>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+            <%}%>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <%if(renderFrom === "add") {%>
@@ -114,7 +119,7 @@
                       <div class="mb-3 row">
                         <label for="picture" class="col-sm-2 col-form-label">Preview</label>
                         <div class="col-sm-10">
-                            <img id="output"/>
+                            <img id="output" <%- data.picture ? `src = "/images/pictures/${data.picture}"` : '' %>/>
                         </div>
                       </div>
             </div>

@@ -49,7 +49,7 @@
           <h5>This is data of Users</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="/user/add" class="btn btn-primary btn-icon-split">
+                <a href="/users/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -149,7 +149,7 @@
     event.preventDefault();
     if (deleteId) {
       $.ajax({
-        url: '/user/delete/' + deleteId,
+        url: '/users/delete/' + deleteId,
         type: 'GET',
         success: function() {
           console.log('Data berhasil dihapus');
@@ -170,7 +170,7 @@
           "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
           "processing": true,
           "serverSide": true,
-          "ajax": "/datatable",
+          "ajax": "/users/datatable",
           "columns": [
               { "data": "userid" },
               { "data": "email" },
@@ -180,7 +180,7 @@
                 "render": function (data, type, row) {
                     return `
                         <td>
-                            <a class="btn btn-success btn-circle" href="/user/edit/${row.userid}">
+                            <a class="btn btn-success btn-circle" href="/users/edit/${row.userid}">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-info-circle"></i>
                                 </span>

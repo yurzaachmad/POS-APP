@@ -34,7 +34,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/sales", (req, res) => {
+  router.get("/", (req, res) => {
     db.query("SELECT * FROM goods", (err, goodsData) => {
       if (err) {
         console.log(err);
@@ -55,7 +55,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/sales/add", (req, res) => {
+  router.get("/add", (req, res) => {
     const { userid } = req.session.user;
 
     db.query(
@@ -70,7 +70,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/:invoice", (req, res) => {
+  router.get("/:invoice", (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
     const stockAlert = req.session.stockAlert;
@@ -102,7 +102,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/get/:barcode", (req, res) => {
+  router.get("/get/:barcode", (req, res) => {
     const { barcode } = req.params;
     db.query(
       "select * from goods where barcode = $1",
@@ -116,7 +116,7 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/sales/add/items", (req, res) => {
+  router.post("/add/items", (req, res) => {
     const sellingPrice = parseFloat(
       req.body.sellingpricegoods.replace(/[^0-9.-]+/g, "")
     );
@@ -173,7 +173,7 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/sales/add/sales", (req, res) => {
+  router.post("/add/sales", (req, res) => {
     const invoice = req.body.invoice;
     const formattedValue = req.body.totalsum.replace(/[^0-9.,-]/g, "");
     const formattedValuechange = req.body.moneychange.replace(/[^0-9.,-]/g, ""); // Menghapus karakter selain angka, koma, dan tanda minus
@@ -193,7 +193,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/edit/:invoice", (req, res) => {
+  router.get("/edit/:invoice", (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
     const stockAlert = req.session.stockAlert;
@@ -227,7 +227,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/get/edit/item/:invoice", (req, res) => {
+  router.get("/get/edit/item/:invoice", (req, res) => {
     const { invoice } = req.params;
     db.query(
       "SELECT saleitems.*, goods.name FROM saleitems LEFT JOIN goods ON saleitems.itemcode = goods.barcode WHERE saleitems.invoice = $1 ORDER BY saleitems.id",
@@ -241,7 +241,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/deleteitems/:id", (req, res) => {
+  router.get("/deleteitems/:id", (req, res) => {
     const { id } = req.params;
     db.query(
       "SELECT invoice FROM saleitems WHERE id = $1",
@@ -266,7 +266,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/sales/delete/:id", (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
     db.query("delete from saleitems where invoice = $1", [id], (err) => {
       if (err) {

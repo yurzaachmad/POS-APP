@@ -33,13 +33,12 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/customers", function (req, res) {
+  router.get("/", function (req, res) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from customers", (err, data) => {
       if (err) {
         console.log(err);
       }
-      console.log("ini", data);
       res.render("customers/customer", {
         data: data.rows,
         user: req.session.user,
@@ -48,7 +47,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/customers/add", function (req, res) {
+  router.get("/add", function (req, res) {
     const stockAlert = req.session.stockAlert;
     res.render("customers/customerform", {
       data: {},
@@ -58,7 +57,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/customers/add", (req, res) => {
+  router.post("/add", (req, res) => {
     db.query(
       "INSERT INTO customers(name, address, phone) VALUES ($1, $2, $3)",
       [req.body.name, req.body.address, req.body.phone],
@@ -71,7 +70,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/customer/edit/:id", (req, res) => {
+  router.get("/edit/:id", (req, res) => {
     const stockAlert = req.session.stockAlert;
     const id = req.params.id;
     db.query(
@@ -92,7 +91,7 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/customer/edit/:id", (req, res) => {
+  router.post("/edit/:id", (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE customers SET name = $1, address = $2, phone = $3 where customerid = $4",
@@ -107,7 +106,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/customer/delete/:id", (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
     db.query("delete from customers where customerid = $1", [id], (err) => {
       if (err) {

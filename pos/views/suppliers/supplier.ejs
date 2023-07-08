@@ -47,7 +47,7 @@
           <h5>This is page of Suppliers</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="/supplier/add" class="btn btn-primary btn-icon-split">
+                <a href="/suppliers/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -144,7 +144,7 @@
       event.preventDefault();
       if (deleteId) {
         $.ajax({
-          url: '/supplier/delete/' + deleteId,
+          url: '/suppliers/delete/' + deleteId,
           type: 'GET',
           success: function() {
             console.log('Data berhasil dihapus');
@@ -165,7 +165,7 @@
               "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
               "processing": true,
               "serverSide": true,
-              "ajax": "/datasuppliers",
+              "ajax": "/suppliers/datasuppliers",
               "columns": [
               { "data": "supplierid" },
                   { "data": "name" },
@@ -175,7 +175,7 @@
                     "render": function (data, type, row) {
                         return `
                             <td>
-                                <a class="btn btn-success btn-circle" href="/supplier/edit/${row.supplierid}">
+                                <a class="btn btn-success btn-circle" href="/suppliers/edit/${row.supplierid}">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-info-circle"></i>
                                     </span>

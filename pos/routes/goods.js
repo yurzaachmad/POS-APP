@@ -40,7 +40,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/goods", isLoggedIn, isAdmin, function (req, res, next) {
+  router.get("/", isLoggedIn, isAdmin, function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from goods", (err, data) => {
       if (err) {
@@ -54,20 +54,24 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/good/add", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/add", isLoggedIn, isAdmin, (req, res) => {
     const stockAlert = req.session.stockAlert;
-    res.render("goods/goodform", {
-      data: {},
-      item: data.rows,
-      renderFrom: "add",
-      user: req.session.user,
-      stockAlert,
+    db.query("select * from units", (err, data) => {
+      res.render("goods/goodform", {
+        data: {},
+        item: data.rows,
+        renderFrom: "add",
+        user: req.session.user,
+        stockAlert,
+        error: req.flash("error"),
+      });
     });
   });
 
-  router.post("/good/add", (req, res) => {
+  router.post("/add", (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send("No files were uploaded.");
+      req.flash("error", "insert goods data");
+      return res.redirect(`/goods/add`);
     }
 
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
@@ -107,7 +111,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/good/edit/:id", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
     const stockAlert = req.session.stockAlert;
     db.query("select * from goods where barcode = $1", [id], (err, items) => {
@@ -126,36 +130,17 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/good/edit/:id", (req, res) => {
+  router.post("/edit/:id", (req, res) => {
     const id = req.params.id;
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send("No files were uploaded.");
-    }
-
-    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-    let picture = req.files.picture;
-    pictureName = `${Date.now()}-${picture.name}`;
-    let uploadPath = path.join(
-      __dirname,
-      "..",
-      "public",
-      "images",
-      "pictures",
-      pictureName
-    );
-
-    // Use the mv() method to place the file somewhere on your server
-    picture.mv(uploadPath, function (err) {
-      if (err) return res.status(500).send(err);
       db.query(
-        "UPDATE goods SET barcode=$1, name=$2, stock=$3, purchaseprice=$4, sellingprice=$5, picture=$6, unit=$7 WHERE barcode=$8",
+        "UPDATE goods SET barcode=$1, name=$2, stock=$3, purchaseprice=$4, sellingprice=$5, unit=$6 WHERE barcode=$7",
         [
           req.body.barcode,
           req.body.name,
           req.body.stock,
           req.body.purchaseprice,
           req.body.sellingprice,
-          pictureName,
           req.body.unit,
           id,
         ],
@@ -167,10 +152,48 @@ module.exports = function (db) {
           }
         }
       );
-    });
+      // return res.status(400).send("No files were uploaded.");
+    } else {
+      // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+      let picture = req.files.picture;
+      pictureName = `${Date.now()}-${picture.name}`;
+      let uploadPath = path.join(
+        __dirname,
+        "..",
+        "public",
+        "images",
+        "pictures",
+        pictureName
+      );
+
+      // Use the mv() method to place the file somewhere on your server
+      picture.mv(uploadPath, function (err) {
+        if (err) return res.status(500).send(err);
+        db.query(
+          "UPDATE goods SET barcode=$1, name=$2, stock=$3, purchaseprice=$4, sellingprice=$5, picture=$6, unit=$7 WHERE barcode=$8",
+          [
+            req.body.barcode,
+            req.body.name,
+            req.body.stock,
+            req.body.purchaseprice,
+            req.body.sellingprice,
+            pictureName,
+            req.body.unit,
+            id,
+          ],
+          function (err) {
+            if (err) {
+              console.error(err);
+            } else {
+              res.redirect("/goods");
+            }
+          }
+        );
+      });
+    }
   });
 
-  router.get("/good/delete/:id", (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
     db.query("delete from goods where barcode = $1", [id], (err) => {
       if (err) {

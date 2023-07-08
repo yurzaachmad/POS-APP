@@ -4,7 +4,7 @@ const isLoggedIn = require("../helpers/util");
 const isAdmin = require("../helpers/utill");
 
 module.exports = function (db) {
-  router.get("/dataunits", async (req, res) => {
+  router.get("/datatable", async (req, res) => {
     let params = [];
 
     if (req.query.search.value) {
@@ -37,7 +37,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/units", isLoggedIn, isAdmin, function (req, res, next) {
+  router.get("/", isLoggedIn, isAdmin, function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from units", (err, data) => {
       if (err) {
@@ -52,47 +52,50 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/unit/add", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/add", isLoggedIn, isAdmin, (req, res) => {
     const stockAlert = req.session.stockAlert;
     res.render("units/unitform", {
       data: {},
       renderFrom: "add",
       user: req.session.user,
       stockAlert,
+      error: req.flash("error"),
     });
   });
 
-  router.post("/unit/add", (req, res) => {
+  router.post("/add", (req, res) => {
     db.query(
       "INSERT INTO units(unit, name, note) VALUES ($1, $2, $3)",
       [req.body.unit, req.body.name, req.body.note],
       (err, data) => {
         if (err) {
           console.log(err);
+          req.flash("error", err.message);
+          return res.redirect(`/units/add`);
         }
         res.redirect("/units");
       }
     );
   });
 
-  router.get("/unit/edit/:id", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
     const stockAlert = req.session.stockAlert;
     db.query("select * from units where unit = $1", [id], (err, item) => {
       if (err) {
         console.log(err);
       }
-      console.log(item.rows);
       res.render("units/unitform", {
         data: item.rows[0],
         renderFrom: "edit",
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
 
-  router.post("/unit/edit/:id", (req, res) => {
+  router.post("/edit/:id", (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE units SET unit = $1, name = $2, note = $3 where unit = $4",
@@ -100,6 +103,8 @@ module.exports = function (db) {
       function (err) {
         if (err) {
           console.error(err);
+          req.flash("error", err.message);
+          res.redirect(`/units/edit/${id}`);
         } else {
           res.redirect("/units");
         }
@@ -107,8 +112,9 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/unit/delete/:id", (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
+    console.log(id, "ini");
     db.query("delete from units where unit = $1", [id], (err) => {
       if (err) {
         console.log("hapus data Units gagal");

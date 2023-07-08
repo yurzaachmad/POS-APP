@@ -35,7 +35,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/suppliers", function (req, res, next) {
+  router.get("/", function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from suppliers", (err, data) => {
       if (err) {
@@ -49,7 +49,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/supplier/add", (req, res) => {
+  router.get("/add", (req, res) => {
     const stockAlert = req.session.stockAlert;
     res.render("suppliers/supplierform", {
       data: {},
@@ -59,7 +59,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/supplier/add", (req, res) => {
+  router.post("/add", (req, res) => {
     db.query(
       "INSERT INTO suppliers(name, address, phone) VALUES ($1, $2, $3)",
       [req.body.name, req.body.address, req.body.phone],
@@ -72,7 +72,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/supplier/edit/:id", (req, res) => {
+  router.get("/edit/:id", (req, res) => {
     const id = req.params.id;
     const stockAlert = req.session.stockAlert;
     db.query(
@@ -93,7 +93,7 @@ module.exports = function (db) {
     );
   });
 
-  router.post("/supplier/edit/:id", (req, res) => {
+  router.post("/edit/:id", (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE suppliers SET name = $1, address = $2, phone = $3 where supplierid = $4",
@@ -108,7 +108,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/supplier/delete/:id", (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
     db.query("delete from suppliers where supplierid = $1", [id], (err) => {
       if (err) {

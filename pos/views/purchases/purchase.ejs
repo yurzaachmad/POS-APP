@@ -47,7 +47,7 @@
           <h5>This is page of Purchases</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="/purchase/add" class="btn btn-primary btn-icon-split">
+                <a href="/purchases/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -137,7 +137,7 @@
               "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
               "processing": true,
               "serverSide": true,
-              "ajax": "/datapurchase",
+              "ajax": "/purchases/datapurchase",
               "columns": [
                   { "data": "invoice" },
                   { "data": "time" },
@@ -206,7 +206,7 @@
       event.preventDefault();
       if (deleteId) {
         $.ajax({
-          url: '/purchase/delete/' + deleteId,
+          url: '/purchases/delete/' + deleteId,
           type: 'GET',
           success: function() {
             console.log('Data berhasil dihapus');

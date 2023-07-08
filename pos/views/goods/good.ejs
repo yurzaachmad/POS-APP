@@ -47,7 +47,7 @@
           <h5>This is page of Goods</h5>
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="/good/add" class="btn btn-primary btn-icon-split">
+                <a href="/goods/add" class="btn btn-primary btn-icon-split">
                   <span class="icon text-white-50">
                     <i class="fa-solid fa-plus"></i>
                   </span>
@@ -177,7 +177,7 @@ $('#confirmDeleteBtn').on('click', function(event) {
       "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
       "processing": true,
       "serverSide": true,
-      "ajax": "/datagoods",
+      "ajax": "/goods/datagoods",
       "columns": [
         { "data": "barcode" },
         { "data": "name" },
@@ -204,7 +204,7 @@ $('#confirmDeleteBtn').on('click', function(event) {
           "render": function (data, type, row) {
             return `
               <td>
-                <a class="btn btn-success btn-circle" href="/good/edit/${row.barcode}">
+                <a class="btn btn-success btn-circle" href="/goods/edit/${row.barcode}">
                   <span class="icon text-white-50">
                     <i class="fas fa-info-circle"></i>
                   </span>

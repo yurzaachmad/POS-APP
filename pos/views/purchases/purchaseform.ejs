@@ -55,7 +55,7 @@
                   <span class="m-0 font-weight-bold text-primary">Transactions</span>
             </div>
           <div class="card-body">
-            <form action="/purchase/add/purchases" method="post" class="row g-3 needs-validation" novalidate>
+            <form action="/purchases/add/purchases" method="post" class="row g-3 needs-validation" novalidate>
                 <div class="col-md-4">
                   <label for="invoice" class="form-label">Invoice</label>
                   <input type="text" class="form-control" id="invoice" name="invoice" value="<%= data.invoice %>" readonly>
@@ -226,7 +226,7 @@
               event.preventDefault();
 
               $.ajax({
-                url: '/purchase/add/items',
+                url: '/purchases/add/items',
                 method: 'POST',
                 data: {
                   invoice: $('#invoice').val(),
@@ -249,7 +249,7 @@
           const selectedBarcode = selectBarcode.val();
     
           $.ajax({
-            url: `/purchase/get/${selectedBarcode}`, // Endpoint router yang sesuai
+            url: `/purchases/get/${selectedBarcode}`, // Endpoint router yang sesuai
             method: 'GET',
             success: function(response) {
               // Response berisi data dari router
@@ -300,7 +300,7 @@
         let iddelete;
       // Fungsi untuk membaca tabel
       const readTable = () => {
-        $.get(`/purchase/get/edit/item/${invoice}`).done((data) => {
+        $.get(`/purchases/get/edit/item/${invoice}`).done((data) => {
   let html = '';
   data.forEach((item, index) => {
     iddelete = item.id

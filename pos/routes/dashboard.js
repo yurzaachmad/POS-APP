@@ -90,7 +90,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/dashboard", isLoggedIn, isAdmin, function (req, res, next) {
+  router.get("/", isLoggedIn, isAdmin, function (req, res, next) {
     db.query("SELECT * FROM goods", (err, goodsData) => {
       if (err) {
         console.log(err);
@@ -143,7 +143,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/dashboard/piechart", function (req, res, next) {
+  router.get("/piechart", function (req, res, next) {
     db.query("select * from sales", (err, item) => {
       res.json(item.rows);
     });

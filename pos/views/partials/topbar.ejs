@@ -96,7 +96,10 @@
         <% if (stockAlert && stockAlert.length > 0) { %>
         <!-- Tampilkan informasi stok yang kurang dari 5 -->
         <% stockAlert.forEach(function(item) { %>
-        <a class="dropdown-item d-flex align-items-center" href="/purchase/add">
+        <a
+          class="dropdown-item d-flex align-items-center"
+          href="/purchases/add"
+        >
           <div class="mr-3">
             <div class="icon-circle bg-warning">
               <i class="fas fa-exclamation-triangle text-white"></i>
@@ -144,17 +147,13 @@
         class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
         aria-labelledby="userDropdown"
       >
-        <a class="dropdown-item" href="/user/profile">
+        <a class="dropdown-item" href="/users/profile">
           <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
           Profile
         </a>
-        <a class="dropdown-item" href="/user/password">
+        <a class="dropdown-item" href="/users/password">
           <i class="fa-solid fa-key"></i>
           Change Password
-        </a>
-        <a class="dropdown-item" href="#">
-          <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-          Activity Log
         </a>
         <div class="dropdown-divider"></div>
         <button

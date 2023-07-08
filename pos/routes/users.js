@@ -39,7 +39,7 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/users", isLoggedIn, isAdmin, function (req, res, next) {
+  router.get("/", isLoggedIn, isAdmin, function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from users", (err, data) => {
       if (err) {
@@ -53,7 +53,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/user/add", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/add", isLoggedIn, isAdmin, (req, res) => {
     const stockAlert = req.session.stockAlert;
     res.render("users/addform", {
       data: {},
@@ -63,7 +63,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/user/add", (req, res) => {
+  router.post("/add", (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
       db.query(
         "INSERT INTO users(email, name, password, role) VALUES ($1, $2, $3, $4)",
@@ -78,7 +78,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/user/edit/:id", isLoggedIn, isAdmin, (req, res) => {
+  router.get("/edit/:id", isLoggedIn, isAdmin, (req, res) => {
     const id = req.params.id;
     const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [id], (err, item) => {
@@ -95,7 +95,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/user/edit/:id", isLoggedIn, (req, res) => {
+  router.post("/edit/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE users SET email = $1, name = $2, role = $3 where userid = $4",
@@ -110,7 +110,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/user/delete/:id", isLoggedIn, (req, res) => {
+  router.get("/delete/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     db.query("delete from users where userid = $1", [id], (err) => {
       if (err) {
@@ -122,7 +122,7 @@ module.exports = function (db) {
 
   //update profile is below
 
-  router.get("/user/profile", isLoggedIn, (req, res) => {
+  router.get("/profile", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
     const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [userid], (err, data) => {
@@ -140,7 +140,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/user/profile", isLoggedIn, (req, res) => {
+  router.post("/profile", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
     db.query(
       "update users set name = $1, email =$2 where userid = $3",
@@ -151,12 +151,12 @@ module.exports = function (db) {
         }
         req.session.user.name = req.body.name;
         req.flash("succesMessage", "your profile has been updated");
-        return res.redirect("/user/profile");
+        return res.redirect("/users/profile");
       }
     );
   });
 
-  router.get("/user/password", isLoggedIn, (req, res) => {
+  router.get("/password", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
     const stockAlert = req.session.stockAlert;
     db.query("select * from users where userid = $1", [userid], (err, data) => {
@@ -174,7 +174,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/user/password", function (req, res, next) {
+  router.post("/password", function (req, res, next) {
     const { userid } = req.session.user;
     db.query(
       "select * from users where email = $1",
@@ -183,7 +183,7 @@ module.exports = function (db) {
         console.log("ini", data);
         if (data.rows.length == 0) {
           req.flash("errorMessage", "email doesn't exist!");
-          return res.redirect("/user/password");
+          return res.redirect("/users/password");
         }
         bcrypt.compare(
           req.body.password,
@@ -191,11 +191,11 @@ module.exports = function (db) {
           function (err, result) {
             if (!result) {
               req.flash("errorMessage", "old password is wrong!");
-              return res.redirect("/user/password");
+              return res.redirect("/users/password");
             }
             if (req.body.newpassword != req.body.retypepassword) {
               req.flash("errorRegister", "retype password does'nt match");
-              return res.redirect("/user/password");
+              return res.redirect("/users/password");
             }
             const password = req.body.newpassword;
             bcrypt.hash(password, saltRounds, function (err, hash) {
@@ -209,7 +209,7 @@ module.exports = function (db) {
                   }
                   console.log("ini", data);
                   req.flash("succesMessage", "your password has been updated");
-                  return res.redirect("/user/password");
+                  return res.redirect("/users/password");
                 }
               );
             });
