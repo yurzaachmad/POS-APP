@@ -48,12 +48,13 @@ module.exports = function (db) {
     ) AS combined_data`;
 
     const filteredTotalQuery = `SELECT COUNT(*) AS total FROM (
-      SELECT time, totalsum, 'purchases' AS table_name FROM purchases
-      UNION ALL
-      SELECT time, totalsum, 'sales' AS table_name FROM sales
-      ${params.length > 0 ? ` WHERE ${params.join(" AND ")}` : ""}
-    ) AS filtered_data
-    GROUP BY EXTRACT(MONTH FROM time)`;
+  SELECT time, totalsum, 'purchases' AS table_name FROM purchases
+  UNION ALL
+  SELECT time, totalsum, 'sales' AS table_name FROM sales
+  ${params.length > 0 ? ` WHERE ${params.join(" AND ")}` : ""}
+) AS combined_data
+${params.length > 0 ? ` WHERE ${params.join(" AND ")}` : ""}
+GROUP BY EXTRACT(MONTH FROM time)`;
 
     const totalResult = await db.query(totalQuery);
     const filteredTotalResult = await db.query(filteredTotalQuery);
@@ -62,21 +63,25 @@ module.exports = function (db) {
     const filteredTotal =
       filteredTotalResult.rows.length > 0 ? filteredTotalResult.rows.length : 0;
 
-    const dataQuery = `SELECT TRIM(TO_CHAR(to_timestamp(EXTRACT(MONTH FROM time)::text, 'MM'), 'Month')) AS month_name,
-              COALESCE(SUM(CASE WHEN table_name = 'purchases' THEN totalsum ELSE 0 END), 0) AS expense,
-              COALESCE(SUM(CASE WHEN table_name = 'sales' THEN totalsum ELSE 0 END), 0) AS revenue,
-              (COALESCE(SUM(CASE WHEN table_name = 'sales' THEN totalsum ELSE 0 END), 0) -
-               COALESCE(SUM(CASE WHEN table_name = 'purchases' THEN totalsum ELSE 0 END), 0)) AS earnings
-      FROM (
-        SELECT time, totalsum, 'purchases' AS table_name FROM purchases
-        UNION ALL
-        SELECT time, totalsum, 'sales' AS table_name FROM sales
-      ) AS combined_data
-      ${params.length > 0 ? `WHERE ${params.join(" AND ")}` : ""}
-      GROUP BY EXTRACT(MONTH FROM time)
-      HAVING ${params.length > 0 ? `COUNT(*) > 0` : `1=1`}
-      ORDER BY ${sortBy}
-      LIMIT ${length} OFFSET ${start}`;
+    const dataQuery = `SELECT CONCAT(
+            TRIM(TO_CHAR(to_timestamp(EXTRACT(MONTH FROM time)::text, 'MM'), 'Month')),
+            ' ',
+            TO_CHAR(MIN(time), 'DD')
+          ) AS month_name,
+          COALESCE(SUM(CASE WHEN table_name = 'purchases' THEN totalsum ELSE 0 END), 0) AS expense,
+          COALESCE(SUM(CASE WHEN table_name = 'sales' THEN totalsum ELSE 0 END), 0) AS revenue,
+          (COALESCE(SUM(CASE WHEN table_name = 'sales' THEN totalsum ELSE 0 END), 0) -
+           COALESCE(SUM(CASE WHEN table_name = 'purchases' THEN totalsum ELSE 0 END), 0)) AS earnings
+    FROM (
+      SELECT time, totalsum, 'purchases' AS table_name FROM purchases
+      UNION ALL
+      SELECT time, totalsum, 'sales' AS table_name FROM sales
+    ) AS combined_data
+    ${params.length > 0 ? `WHERE ${params.join(" AND ")}` : ""}
+    GROUP BY EXTRACT(MONTH FROM time)
+    HAVING ${params.length > 0 ? `COUNT(*) > 0` : `1=1`}
+    ORDER BY ${sortBy}
+    LIMIT ${length} OFFSET ${start}`;
 
     const dataResult = await db.query(dataQuery);
     const data = dataResult.rows;
