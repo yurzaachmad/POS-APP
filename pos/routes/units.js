@@ -43,11 +43,11 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      // console.log("ini", data.rows);
       res.render("units/unit", {
         data: data.rows,
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
@@ -114,10 +114,11 @@ module.exports = function (db) {
 
   router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
-    console.log(id, "ini");
     db.query("delete from units where unit = $1", [id], (err) => {
       if (err) {
         console.log("hapus data Units gagal");
+        req.flash("error", err.message);
+        return res.redirect(`/`);
       }
       res.redirect("/units");
     });

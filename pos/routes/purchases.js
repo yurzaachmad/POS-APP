@@ -34,7 +34,7 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/", function (req, res, next) {
+  router.get("/", isLoggedIn, function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from purchases", (err, data) => {
       if (err) {
@@ -63,7 +63,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/:invoice", (req, res) => {
+  router.get("/:invoice", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
     const stockAlert = req.session.stockAlert;
@@ -166,7 +166,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/edit/:invoice", (req, res) => {
+  router.get("/edit/:invoice", isLoggedIn, (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
     const stockAlert = req.session.stockAlert;
@@ -174,7 +174,6 @@ module.exports = function (db) {
       "select * from purchases where invoice = $1",
       [invoice],
       (err, item) => {
-        console.log(item);
         db.query(
           "select * from users where userid = $1",
           [userid],

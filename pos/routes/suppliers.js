@@ -1,4 +1,5 @@
 var express = require("express");
+const isLoggedIn = require("../helpers/util");
 var router = express.Router();
 
 module.exports = function (db) {
@@ -35,7 +36,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/", function (req, res, next) {
+  router.get("/", isLoggedIn, function (req, res, next) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from suppliers", (err, data) => {
       if (err) {
@@ -45,11 +46,12 @@ module.exports = function (db) {
         data: data.rows,
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
 
-  router.get("/add", (req, res) => {
+  router.get("/add", isLoggedIn, (req, res) => {
     const stockAlert = req.session.stockAlert;
     res.render("suppliers/supplierform", {
       data: {},
@@ -72,7 +74,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/edit/:id", (req, res) => {
+  router.get("/edit/:id", isLoggedIn, (req, res) => {
     const id = req.params.id;
     const stockAlert = req.session.stockAlert;
     db.query(
@@ -113,6 +115,8 @@ module.exports = function (db) {
     db.query("delete from suppliers where supplierid = $1", [id], (err) => {
       if (err) {
         console.log("hapus data suppliers gagal");
+        req.flash("error", err.message);
+        return res.redirect(`/`);
       }
       res.redirect("/suppliers");
     });

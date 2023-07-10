@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 const isLoggedIn = require("../helpers/util");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
 /* GET home page. */
 module.exports = function (db) {
@@ -41,44 +40,6 @@ module.exports = function (db) {
             }
           }
         );
-        // Store hash in your password DB.
-      }
-    );
-  });
-
-  router.get("/register", function (req, res, next) {
-    res.render("register", { errorRegister: req.flash("errorRegister") });
-  });
-
-  router.post("/register", function (req, res, next) {
-    if (req.body.retypepassword != req.body.password) {
-      req.flash("errorRegister", "password does'nt match");
-      return res.redirect("/register");
-    }
-
-    db.query(
-      "select * from users where email = $1",
-      [req.body.email],
-      (err, data) => {
-        if (data.rows.length > 0) {
-          req.flash("errorRegister", "email is exist!");
-          return res.redirect("/register");
-        }
-
-        const password = req.body.password;
-        bcrypt.hash(password, saltRounds, function (err, hash) {
-          if (err) throw err;
-          db.query(
-            "insert into users(email, password) values ($1, $2)",
-            [req.body.email, hash],
-            (err, data) => {
-              if (err) {
-                console.log(err);
-              }
-              res.redirect("/dashboard");
-            }
-          );
-        });
         // Store hash in your password DB.
       }
     );

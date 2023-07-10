@@ -50,6 +50,7 @@ module.exports = function (db) {
         data: data.rows,
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
@@ -104,6 +105,8 @@ module.exports = function (db) {
         (err, data) => {
           if (err) {
             console.log(err);
+            req.flash("error", err.message);
+            return res.redirect(`/goods/add`);
           }
           res.redirect("/goods");
         }
@@ -125,6 +128,7 @@ module.exports = function (db) {
           renderFrom: "edit",
           user: req.session.user,
           stockAlert,
+          error: req.flash("error"),
         });
       });
     });
@@ -147,6 +151,8 @@ module.exports = function (db) {
         function (err) {
           if (err) {
             console.error(err);
+            req.flash("error", err.message);
+            return res.redirect(`/goods/edit/${id}`);
           } else {
             res.redirect("/goods");
           }
@@ -184,6 +190,8 @@ module.exports = function (db) {
           function (err) {
             if (err) {
               console.error(err);
+              req.flash("error", err.message);
+              return res.redirect(`/goods/edit/${id}`);
             } else {
               res.redirect("/goods");
             }
@@ -198,6 +206,8 @@ module.exports = function (db) {
     db.query("delete from goods where barcode = $1", [id], (err) => {
       if (err) {
         console.log("hapus data Goods gagal");
+        req.flash("error", err.message);
+        return res.redirect(`/`);
       }
       res.redirect("/goods");
     });

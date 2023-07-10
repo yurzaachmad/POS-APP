@@ -105,7 +105,7 @@ GROUP BY EXTRACT(MONTH FROM time)`;
       }
 
       // Menyimpan data stok ke dalam session
-      const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+      const stockAlert = goodsData.rows.filter((item) => item.stock <= 5);
       req.session.stockAlert = stockAlert;
 
       db.query("select * from purchases", (err, data) => {

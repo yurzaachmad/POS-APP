@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var moment = require("moment");
+const isLoggedIn = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/datasales", async (req, res) => {
@@ -34,7 +35,7 @@ module.exports = function (db) {
     res.json(response);
   });
 
-  router.get("/", (req, res) => {
+  router.get("/", isLoggedIn, (req, res) => {
     db.query("SELECT * FROM goods", (err, goodsData) => {
       if (err) {
         console.log(err);
@@ -70,7 +71,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/:invoice", (req, res) => {
+  router.get("/:invoice", isLoggedIn, (req, res) => {
     const { userid } = req.session.user;
     const { invoice } = req.params;
     const stockAlert = req.session.stockAlert;
@@ -150,7 +151,6 @@ module.exports = function (db) {
             name: item.name,
             barcode: item.barcode,
           };
-          console.log(stockAlert, "ini");
         }
 
         // Perform the insertion into the saleitems table
@@ -193,7 +193,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/edit/:invoice", (req, res) => {
+  router.get("/edit/:invoice", isLoggedIn, (req, res) => {
     const { invoice } = req.params;
     const { userid } = req.session.user;
     const stockAlert = req.session.stockAlert;

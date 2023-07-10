@@ -49,6 +49,7 @@ module.exports = function (db) {
         data: data.rows,
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
@@ -85,7 +86,6 @@ module.exports = function (db) {
       if (err) {
         console.log(err);
       }
-      console.log(item.rows);
       res.render("users/addform", {
         data: item.rows[0],
         isEdit: true,
@@ -95,7 +95,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/edit/:id", isLoggedIn, (req, res) => {
+  router.post("/edit/:id", (req, res) => {
     const id = req.params.id;
     db.query(
       "UPDATE users SET email = $1, name = $2, role = $3 where userid = $4",
@@ -110,11 +110,13 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/delete/:id", isLoggedIn, (req, res) => {
+  router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
     db.query("delete from users where userid = $1", [id], (err) => {
       if (err) {
         console.log("hapus data users gagal");
+        req.flash("error", err.message);
+        return res.redirect(`/`);
       }
       res.redirect("/users");
     });
@@ -140,7 +142,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/profile", isLoggedIn, (req, res) => {
+  router.post("/profile", (req, res) => {
     const { userid } = req.session.user;
     db.query(
       "update users set name = $1, email =$2 where userid = $3",
@@ -180,7 +182,6 @@ module.exports = function (db) {
       "select * from users where email = $1",
       [req.body.email],
       (err, data) => {
-        console.log("ini", data);
         if (data.rows.length == 0) {
           req.flash("errorMessage", "email doesn't exist!");
           return res.redirect("/users/password");
@@ -207,7 +208,6 @@ module.exports = function (db) {
                   if (err) {
                     console.log(err);
                   }
-                  console.log("ini", data);
                   req.flash("succesMessage", "your password has been updated");
                   return res.redirect("/users/password");
                 }

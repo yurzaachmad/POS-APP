@@ -55,6 +55,11 @@
               </a>
             </div>
             <div class="card-body">
+              <%if (error.length > 0){%>
+                <div class="alert alert-danger" role="alert">
+                  <%= error %>
+                </div>
+                <%}%>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="goodsid" width="100%" cellspacing="0">
                       <thead>
@@ -153,7 +158,7 @@ $('#confirmDeleteBtn').on('click', function(event) {
   event.preventDefault();
   if (deleteId) {
     $.ajax({
-      url: '/good/delete/' + deleteId,
+      url: '/goods/delete/' + deleteId,
       type: 'GET',
       success: function() {
         console.log('Data berhasil dihapus');

@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const isLoggedIn = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/customertable", async (req, res) => {
@@ -33,7 +34,7 @@ module.exports = function (db) {
     };
     res.json(response);
   });
-  router.get("/", function (req, res) {
+  router.get("/", isLoggedIn, function (req, res) {
     const stockAlert = req.session.stockAlert;
     db.query("select * from customers", (err, data) => {
       if (err) {
@@ -43,11 +44,12 @@ module.exports = function (db) {
         data: data.rows,
         user: req.session.user,
         stockAlert,
+        error: req.flash("error"),
       });
     });
   });
 
-  router.get("/add", function (req, res) {
+  router.get("/add", isLoggedIn, function (req, res) {
     const stockAlert = req.session.stockAlert;
     res.render("customers/customerform", {
       data: {},
@@ -70,7 +72,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/edit/:id", (req, res) => {
+  router.get("/edit/:id", isLoggedIn, (req, res) => {
     const stockAlert = req.session.stockAlert;
     const id = req.params.id;
     db.query(
@@ -110,7 +112,8 @@ module.exports = function (db) {
     const id = req.params.id;
     db.query("delete from customers where customerid = $1", [id], (err) => {
       if (err) {
-        console.log("hapus data customers gagal");
+        req.flash("error", err.message);
+        return res.redirect(`/`);
       }
       res.redirect("/customers");
     });

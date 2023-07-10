@@ -55,6 +55,11 @@
               </a>
             </div>
             <div class="card-body">
+              <%if (error.length > 0){%>
+                <div class="alert alert-danger" role="alert">
+                  <%= error %>
+                </div>
+                <%}%>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="customersid" width="100%" cellspacing="0">
                       <thead>
@@ -194,7 +199,7 @@ $('#confirmDeleteBtn').on('click', function(event) {
 var message = document.getElementById('messages')
 var alerts = document.getElementById('alert')
 var navbar = document.getElementById('navbar');
-var users = document.getElementById('users');
+var users = document.getElementById('Users');
 var collapseUtilities = document.getElementById('Utilities');
 
   if ('<%= user.role %>' !== 'admin') {
