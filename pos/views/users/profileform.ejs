@@ -147,5 +147,18 @@
     <!-- Page level plugins -->
     <script src="/javascripts/jquery.dataTables.min.js"></script>
     <script src="/javascripts/dataTables.bootstrap4.min.js"></script>
+    <script>
+      var alerts = document.getElementById('alert')
+var navbar = document.getElementById('navbar');
+var users = document.getElementById('Users');
+var collapseUtilities = document.getElementById('Utilities');
+
+  if ('<%= user.role %>' !== 'admin') {
+    navbar.remove()
+  users.remove()
+  collapseUtilities.remove()
+  alerts.remove()
+}
+    </script>
   </body>
 </html>

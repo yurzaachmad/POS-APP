@@ -112,14 +112,26 @@ module.exports = function (db) {
 
   router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
-    db.query("delete from suppliers where supplierid = $1", [id], (err) => {
-      if (err) {
-        console.log("hapus data suppliers gagal");
-        req.flash("error", err.message);
-        return res.redirect(`/`);
-      }
-      res.redirect("/suppliers");
-    });
+    const user = req.session.user;
+    if (user.role === "admin") {
+      db.query("delete from suppliers where supplierid = $1", [id], (err) => {
+        if (err) {
+          console.log("hapus data suppliers gagal");
+          req.flash("error", err.message);
+          return res.redirect(`/`);
+        }
+        res.redirect("/suppliers");
+      });
+    } else {
+      db.query("delete from suppliers where supplierid = $1", [id], (err) => {
+        if (err) {
+          console.log("hapus data suppliers gagal");
+          req.flash("error", err.message);
+          return res.redirect(`/`);
+        }
+        res.redirect("/suppliers");
+      });
+    }
   });
 
   return router;

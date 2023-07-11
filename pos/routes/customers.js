@@ -110,13 +110,25 @@ module.exports = function (db) {
 
   router.get("/delete/:id", (req, res) => {
     const id = req.params.id;
-    db.query("delete from customers where customerid = $1", [id], (err) => {
-      if (err) {
-        req.flash("error", err.message);
-        return res.redirect(`/`);
-      }
-      res.redirect("/customers");
-    });
+    const user = req.session.user;
+    if (user.role === "admin") {
+      db.query("delete from customers where customerid = $1", [id], (err) => {
+        if (err) {
+          req.flash("error", err.message);
+          return res.redirect(`/`);
+        }
+        res.redirect("/customers");
+      });
+    } else {
+      db.query("delete from customers where customerid = $1", [id], (err) => {
+        if (err) {
+          req.flash("error", err.message);
+          res.redirect(`/`);
+        } else {
+          res.redirect("/customers");
+        }
+      });
+    }
   });
 
   return router;

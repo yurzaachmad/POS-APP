@@ -45,7 +45,7 @@ module.exports = function (db) {
       }
 
       // Menyimpan data stok ke dalam session
-      const stockAlert = goodsData.rows.filter((item) => item.stock < 5);
+      const stockAlert = goodsData.rows.filter((item) => item.stock <= 5);
       req.session.stockAlert = stockAlert;
       db.query("select * from sales", (err, data) => {
         if (err) {
